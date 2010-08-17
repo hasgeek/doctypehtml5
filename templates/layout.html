@@ -20,7 +20,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}"/>
   <link rel="stylesheet" media="handheld" href="{{ url_for('static', filename='css/handheld.css') }}"/>
-  <script src="{{ url_for('static', filename='js/modernizr-1.5.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/modernizr-1.5.min.js') }}"></script>
+{%- if config['TYPEKIT_CODE'] %}
+  <script type="text/javascript" src="http://use.typekit.com/{{ config['TYPEKIT_CODE'] }}.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+{% endif -%}
 </head>
 
 <!--[if lt IE 7 ]> <body class="ie6"> <![endif]-->
@@ -41,18 +45,18 @@
     </footer>
   </div> <!--! end of #container -->
 
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-  <script>!window.jQuery && document.write('<script src="{{ url_for('static', filename='js/jquery-1.4.2.min.js') }}"><\/script>')</script>
-  <script src="{{ url_for('static', filename='js/sammy-0.5.4.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/plugins.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script type="text/javascript">!window.jQuery && document.write('<script src="{{ url_for("static", filename="js/jquery-1.4.2.min.js") }}"><\/script>')</script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/sammy-0.5.4.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/plugins.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
 
   <!--[if lt IE 7 ]>
     <script src="js/dd_belatedpng.js"></script>
   <![endif]-->
 
 {% if config['GA_CODE'] %}
-  <script>
+  <script type="text/javascript">
    var _gaq = [['_setAccount', '{{ config['GA_CODE'] }}'], ['_trackPageview']];
    (function(d, t) {
     var g = d.createElement(t),
@@ -63,5 +67,12 @@
    })(document, 'script');
   </script>
 {% endif -%}
+
+<script type="text/javascript">
+  $(function() {
+    navigation.run('#/index');
+  });
+</script>
+
 </body>
 </html>
