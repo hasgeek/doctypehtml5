@@ -11,6 +11,11 @@ You will need the `Flask <http://flask.pocoo.org/>`__ framework. To install Flas
 
 Installing into a ``virtualenv`` is strongly recommended.
 
+License
+-------
+
+BSD and Creative Commons By 3.0. See ``LICENSE.txt``.
+
 Deployment
 ----------
 

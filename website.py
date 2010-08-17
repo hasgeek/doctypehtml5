@@ -18,7 +18,12 @@ def favicon():
     return redirect(url_for('static', filename='favicon.ico'), code=301)
 
 app.config.from_object(__name__)
-#app.config.from_object('settings')
+try:
+    app.config.from_object('settings')
+except ImportError:
+    import sys
+    print >> sys.stderr, "Please create a settings.py with the necessary settings. See settings-sample.py."
+    print >> sys.stderr, "You may use the site without these settings, but some features may not work."
 
 if __name__ == '__main__':
     app.run(debug=True)

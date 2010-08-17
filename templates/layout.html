@@ -41,20 +41,17 @@
     </footer>
   </div> <!--! end of #container -->
 
-{% if false %}
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script>!window.jQuery && document.write('<script src="{{ url_for('static', filename='js/jquery-1.4.2.min.js') }}"><\/script>')</script>
-
-
+  <script src="{{ url_for('static', filename='js/sammy-0.5.4.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/plugins.js') }}"></script>
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-{% endif %}
 
   <!--[if lt IE 7 ]>
     <script src="js/dd_belatedpng.js"></script>
   <![endif]-->
 
-{% if config['GA_CODE'] -%}
+{% if config['GA_CODE'] %}
   <script>
    var _gaq = [['_setAccount', '{{ config['GA_CODE'] }}'], ['_trackPageview']];
    (function(d, t) {
@@ -65,6 +62,6 @@
     s.parentNode.insertBefore(g, s);
    })(document, 'script');
   </script>
-{%- endif %}
+{% endif -%}
 </body>
 </html>
