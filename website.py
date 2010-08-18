@@ -26,4 +26,4 @@ except ImportError:
     print >> sys.stderr, "You may use the site without these settings, but some features may not work."
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run('0.0.0.0', 8000, debug=True)

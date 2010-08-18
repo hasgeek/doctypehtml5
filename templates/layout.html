@@ -18,9 +18,15 @@
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}"/>
   <link rel="stylesheet" media="handheld" href="{{ url_for('static', filename='css/handheld.css') }}"/>
+  <link rel="stylesheet" media="screen, projector" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>
   <script type="text/javascript" src="{{ url_for('static', filename='js/modernizr-1.5.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}"/>
+  <!--[if !IE 7]>
+  	<style type="text/css">
+  		#container {display:table;height:100%}
+  	</style>
+  <![endif]-->
 {%- if config['TYPEKIT_CODE'] %}
   <script type="text/javascript" src="http://use.typekit.com/{{ config['TYPEKIT_CODE'] }}.js"></script>
   <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
@@ -40,13 +46,15 @@
     <div id="main">
       {% block content %}{% endblock %}
     </div>
-    <footer>
-      {% block footer %}{% endblock %}
-    </footer>
+    <div class="clearfix"><!-- --></div>
   </div> <!--! end of #container -->
+  <footer>
+    {% block footer %}{% endblock %}
+  </footer>
 
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script type="text/javascript">!window.jQuery && document.write('<script src="{{ url_for("static", filename="js/jquery-1.4.2.min.js") }}"><\/script>')</script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-ui-1.8.4.min.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/sammy-0.5.4.min.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/plugins.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
@@ -55,7 +63,7 @@
     <script src="js/dd_belatedpng.js"></script>
   <![endif]-->
 
-{% if config['GA_CODE'] %}
+{% if config['GA_CODE'] and not config['DEBUG'] %}
   <script type="text/javascript">
    var _gaq = [['_setAccount', '{{ config['GA_CODE'] }}'], ['_trackPageview']];
    (function(d, t) {
@@ -68,11 +76,11 @@
   </script>
 {% endif -%}
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
   $(function() {
     navigation.run('#/index');
   });
-</script>
-
+</script> -->
+  {% block footerscripts %}{% endblock %}
 </body>
 </html>

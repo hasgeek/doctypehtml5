@@ -1,24 +1,92 @@
 body {
-    font-size: 150%;
-    font-family: "Helvetica Neue", arial,helvetica,"Nimbus Sans L", "Bitstream Vera Sans", sans-serif;
+    font-size: 100%;
+    font-family: "Museo Sans", "Helvetica Neue", Arial, Helvetica, "Nimbus Sans L", "Bitstream Vera Sans", sans-serif;
+}
+
+footer {
+    font-size: 85%;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #container {
     max-width: 960px;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 1em;
     padding: 1em;
-    margin-bottom: 0;   
+    padding-top: 2em;
+    margin-bottom: 0;
 }
+
+/* Schedule table */
+
+.schedule {
+    margin: 1em 0;
+}
+
+.schedule .dayslot {
+    margin: 1em 0;
+    min-height: 1em;
+    padding: 0.5em;
+    background-color: #e6e6e6;
+    border-radius: 0.25em;
+}
+
+.schedule .dayslot .icon {
+    float: left;
+    min-width: 48px;
+}
+
+.schedule .dayslot .title {
+    float: left;
+    font-weight: bold;
+    margin-right: 0.5em;
+}
+
+.schedule .dayslot .speaker {
+    float: left;
+    font-style: italic;
+}
+
+.schedule .dayslot .time {
+    float: right;
+    margin-left: 0.5em;
+    font-weight: bold;
+    font-size: 85%;
+}
+
+/* Sticky footer. FIXME: There are extra margins somewhere, but where? */
+html, body {
+    height: 100%;
+}
+#container {
+    min-height: 100%;
+}
+#main {
+    overflow: auto;
+	padding-bottom: 50px; /* must be same height as the footer */
+}
+footer {
+    position: relative;
+	margin-top: -50px; /* negative value of footer height */
+	height: 50px;
+	clear: both;
+} 
+/*Opera Fix for sticky footer*/
+body:before {
+	content:"";
+	height: 100%;
+	float: left;
+	width: 0;
+	margin-top: -32767px;/
+}
+
+/* Logo type */
 
 h1 {
-    font-size: 150%;
+    font-size: 300%;
     margin: 0.5em 0;
-}
-
-p {
-    margin: 1em 0;
 }
 
 h1 sup {
@@ -36,4 +104,93 @@ h1 .bang {
 
 h1 .domain {
     color: #999;
+}
+
+/* Generic */
+
+h2, h3, h4, h5, h6, p, ul, ol {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+a, a:hover, a:active, a:visited {
+    color: #607890;
+    text-decoration: none;
+    border-bottom: 1px dashed;
+}
+
+a:hover {
+    border-bottom: 1px solid;
+}
+
+/* Headings */
+h2 {
+    font-size: 200%;
+    margin-bottom: 0.25em;
+}
+
+h3 {
+    font-size: 150%;
+    margin-bottom: 0.25em;
+}
+
+h4 {
+    font-size: 125%;
+}
+
+h5 {
+    font-size: 115%;
+}
+
+h6 {
+    font-size: 105%;
+}
+
+h2 + p, h2 + ul, h2 + ol,
+h3 + p, h3 + ul, h3 + ol {
+    margin-top: 0;
+}
+
+/* Forms */
+form dt {
+    font-weight: bold;
+    margin-top: 1em;
+}
+
+form p.hint {
+    margin: 0;
+    font-size: 85%;
+}
+
+/* jQuery UI customisation */
+
+.ui-widget-content {
+    border: 0;
+    color: #444;
+}
+
+.ui-widget-header a, .ui-widget-header a:hover {
+    border-bottom: 0;
+}
+
+.ui-tabs .ui-tabs-panel {
+    padding: 0;
+}
+
+.ui-widget-header {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #aaa;
+    font-weight: bold;
+}
+
+.ui-widget-header .ui-state-default {
+    font-weight: bold;
+}
+
+.ui-corner-all {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }

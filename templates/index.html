@@ -1,12 +1,57 @@
 {% extends "layout.html" %}
-{% block title %}‹! doctype html ›{% endblock %}
+{% block title %}‹! doctype html5 ›{% endblock %}
 {% block header %}
   <h1><span class="brkt">&lt;</span><span class="bang">!</span>doctype html<sup>5</sup><span class="domain">.in</span><span class="brkt">&gt;</span></h1>
 {% endblock %}
 {% block content %}
+  <div id="tabs">
+    <ul>
+      <li><a href="#agenda">Agenda</a></li>
+      <li><a href="#schedule">Schedule</a></li>
+      <li><a href="#registration">Registration</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#sponsor">Sponsors</a></li>
+      <li><a href="#team">Team</a></li>
+    </ul>
+    <div id="agenda">
+      {% include 'agenda.html' %}
+    </div>
+    <div id="schedule">
+      {% include 'schedule.html' %}
+    </div>
+    <div id="registration">
+      {% include 'registration.html' %}
+    </div>
+    <div id="faq">
+      {% include 'faq.html' %}
+    </div>
+    <div id="sponsor">
+      {% include 'sponsors.html' %}
+    </div>
+    <div id="team">
+      {% include 'team.html' %}
+    </div>
+  </div>
+{% endblock %}
+{% block footer %}
   <p>
-    This is all still hush hush. You’ll have to wait a few more days.
-    In the meanwhile, why not poke around the source for this website
-    and maybe <a href="http://github.com/jace/doctypehtml5">fork it</a>?
+    DocTypeHTML5 is a one day conference on HTML5, CSS3 and related technologies organised by the Social Primates.
   </p>
+{% endblock %}
+{% block footerscripts %}
+  <script type="text/javascript">
+    $(function() {
+      var mainTabs = $("#tabs").tabs({
+        select: function(ev, ui) {
+          location.href = ui.tab.href;
+          return true;
+        }
+      });
+      $.sammy(function() {
+        this.get('#:tab', function(context) {
+          mainTabs.tabs('select', '#' + this.params['tab']);
+        });
+      }).run();
+    });
+  </script>
 {% endblock %}
