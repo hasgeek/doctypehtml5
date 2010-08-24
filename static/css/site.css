@@ -1,6 +1,16 @@
 body {
-    font-size: 100%;
+    font-size: 13pt;
+    line-height: 1.3;
     font-family: "Museo Sans", "Helvetica Neue", Arial, Helvetica, "Nimbus Sans L", "Bitstream Vera Sans", sans-serif;
+}
+
+p, dl {
+    /* font-family: "Hattori Hanzo", sans-serif; */
+    /* color: #000; */
+}
+
+dt {
+    font-weight: bold;
 }
 
 footer {
@@ -57,7 +67,7 @@ footer {
 }
 
 /* Sticky footer. FIXME: There are extra margins somewhere, but where? */
-html, body {
+/* html, body {
     height: 100%;
 }
 #container {
@@ -65,22 +75,22 @@ html, body {
 }
 #main {
     overflow: auto;
-	padding-bottom: 50px; /* must be same height as the footer */
+	padding-bottom: 50px;
 }
 footer {
     position: relative;
-	margin-top: -50px; /* negative value of footer height */
+	margin-top: -50px;
 	height: 50px;
 	clear: both;
-} 
+} */
 /*Opera Fix for sticky footer*/
-body:before {
+/* body:before {
 	content:"";
 	height: 100%;
 	float: left;
 	width: 0;
 	margin-top: -32767px;/
-}
+} */
 
 /* Logo type */
 
@@ -108,9 +118,9 @@ h1 .domain {
 
 /* Generic */
 
-h2, h3, h4, h5, h6, p, ul, ol {
-    margin-top: 1em;
-    margin-bottom: 1em;
+h2, h3, h4, h5, h6, p, ul, ol, dl, dt, dd {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 a, a:hover, a:active, a:visited {
@@ -155,6 +165,12 @@ h3 + p, h3 + ul, h3 + ol {
 form dt {
     font-weight: bold;
     margin-top: 1em;
+    margin-bottom: 0;
+}
+
+form dd {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 form p.hint {
@@ -163,6 +179,10 @@ form p.hint {
 }
 
 /* jQuery UI customisation */
+
+.ui-widget {
+    font-size: 1em;
+}
 
 .ui-widget-content {
     border: 0;
@@ -175,6 +195,7 @@ form p.hint {
 
 .ui-tabs .ui-tabs-panel {
     padding: 0;
+    margin-top: 1.5em;
 }
 
 .ui-widget-header {

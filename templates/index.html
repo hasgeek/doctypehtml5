@@ -4,30 +4,45 @@
   <h1><span class="brkt">&lt;</span><span class="bang">!</span>doctype html<sup>5</sup><span class="domain">.in</span><span class="brkt">&gt;</span></h1>
 {% endblock %}
 {% block content %}
+  <p id="browseralert" style="display: none;">
+    Hello there! You seem to be using Internet Explorer. Your browser has been a
+    laggard at supporting the latest web standards. You might want to visit this
+    site using <a href="http://www.google.com/chrome">Chrome</a>,
+    <a href="http://www.mozilla.com/firefox/">Firefox</a>,
+    <a href="http://www.apple.com/safari/">Safari</a> or
+    <a href="http://www.opera.com/">Opera</a> to see what you are missing out on.
+    <a href="" onclick="$('#browseralert').slideUp(); return false;" id="browseralertclose">(dismiss)</a>
+    </p>
   <div id="tabs">
     <ul>
+      <li><a href="#overview">Overview</a></li>
       <li><a href="#agenda">Agenda</a></li>
-      <li><a href="#schedule">Schedule</a></li>
+      {#<li><a href="#schedule">Schedule</a></li>#}
       <li><a href="#registration">Registration</a></li>
       <li><a href="#faq">FAQ</a></li>
-      <li><a href="#sponsor">Sponsors</a></li>
+      {#<li><a href="#sponsor">Sponsors</a></li>#}
       <li><a href="#team">Team</a></li>
     </ul>
+    <div id="overview">
+      {% include 'overview.html' %}
+    </div>
     <div id="agenda">
       {% include 'agenda.html' %}
     </div>
+    {#
     <div id="schedule">
       {% include 'schedule.html' %}
     </div>
+    #}
     <div id="registration">
       {% include 'registration.html' %}
     </div>
     <div id="faq">
       {% include 'faq.html' %}
     </div>
-    <div id="sponsor">
+    {#<div id="sponsor">
       {% include 'sponsors.html' %}
-    </div>
+    </div>#}
     <div id="team">
       {% include 'team.html' %}
     </div>
@@ -35,7 +50,7 @@
 {% endblock %}
 {% block footer %}
   <p>
-    DocTypeHTML5 is a one day conference on HTML5, CSS3 and related technologies organised by the Social Primates.
+    DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies organised by the Social Primates.
   </p>
 {% endblock %}
 {% block footerscripts %}
@@ -53,5 +68,13 @@
         });
       }).run();
     });
+  </script>
+
+  <script type="text/javascript">
+  $(function() {
+    if ($.browser.msie) {
+      $("#browseralert").slideDown('slow');
+    }
+  });
   </script>
 {% endblock %}
