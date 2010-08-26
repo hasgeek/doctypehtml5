@@ -29,6 +29,42 @@ footer {
     margin-bottom: 0;
 }
 
+blockquote {
+    margin: 0.5em 2em 0.5em 2em;
+    padding: 0;
+}
+
+blockquote:before, blockquote:after {
+    color: #ccc;
+    display: block;
+    font-size: 700%;
+    width: 1em;
+}
+
+blockquote:before {
+    float: left;
+    content: "\201C";
+    height: 0;
+    margin-left: -0.3em;
+    margin-top: -0.25em;
+}
+
+blockquote:after {
+    content: "\201D";
+    float: right;
+    text-align: right;
+    height: 0;
+    margin-right: -0.3em;
+    margin-top: -0.25em;
+}
+
+p.attribution {
+    text-align: left;
+    padding-left: 2em;
+    font-style: italic;
+    margin-bottom: 1em;
+}
+
 /* Schedule table */
 
 .schedule {
@@ -105,7 +141,7 @@ h1 sup {
 }
 
 h1 .brkt {
-    color: blue;
+    color: #69c;
 }
 
 h1 .bang {
@@ -118,7 +154,7 @@ h1 .domain {
 
 /* Generic */
 
-h2, h3, h4, h5, h6, p, ul, ol, dl, dt, dd {
+h2, h3, h4, h5, h6, p, ul, ol, dl, dt, dd, blockquote {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
 }
