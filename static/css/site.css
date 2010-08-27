@@ -204,6 +204,10 @@ form dt {
     margin-bottom: 0;
 }
 
+form label.input {
+    font-weight: bold;
+}
+
 form dd {
     margin-top: 0;
     margin-bottom: 0;

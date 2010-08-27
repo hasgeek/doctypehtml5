@@ -6,12 +6,12 @@
 </p>
 <form method="POST">
   <dl>
-    <dt>Your Name</dt>
-    <dd><input type="text" name="name"/></dd>
-    <dt>Email</dt>
-    <dd><input type="text" name="email"/></dd>
-    <dt>Phone</dt>
-    <dd><input type="text" name="phone"/></dd>
+    <dt><label for="regname">Your Name</label></dt>
+    <dd><input type="text" id="regname" name="name"/></dd>
+    <dt><label for="regemail">Email</label></dt>
+    <dd><input type="email" id="regemail" name="email"/></dd>
+    <dt><label for="regphone">Phone</label></dt>
+    <dd><input type="text" id="regphone" name="phone"/></dd>
     <dd><p class="hint">Indian phone numbers only. Please include your city code.</p></dd>
   </dl>
   <p class="buttons">
@@ -24,4 +24,18 @@
   as much as you do. If you give us your number, one of the <a href="#team">team</a>
   will call to say hello when registrations are open. Mobile numbers will get
   an SMS reminder too.
+</p>
+<h3>Community discussion group</h3>
+<p>
+  The <a href="http://groups.google.com/group/html5-in">HTML5 discussion group</a>
+  is a great place to meet fellow HTML5 enthusiasts and discuss ideas and solutions.
+  Group members meet once a month in Bangalore.
+  The list is open and free. All are welcome.
+</p>
+<p>
+  <form action="http://groups.google.com/group/html5-in/boxsubscribe">
+    <label for="subemail" class="input">Email:</label>
+    <input type="email" id="subemail" name="email" placeholder="user@example.com"/>
+    <input type="submit" name="sub" value="Subscribe"/>
+  </form>
 </p>

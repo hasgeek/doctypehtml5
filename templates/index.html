@@ -4,7 +4,7 @@
   <h1><span class="brkt">&lt;</span><span class="bang">!</span>doctype html<sup>5</sup><span class="domain">.in</span><span class="brkt">&gt;</span></h1>
 {% endblock %}
 {% block content %}
-  <p id="browseralert" style="display: none;">
+{#  <p id="browseralert" style="display: none;">
     Hello there! You seem to be using Internet Explorer. Your browser has been a
     laggard at supporting the latest web standards. You might want to visit this
     site using <a href="http://www.google.com/chrome">Chrome</a>,
@@ -12,7 +12,7 @@
     <a href="http://www.apple.com/safari/">Safari</a> or
     <a href="http://www.opera.com/">Opera</a> to see what you are missing out on.
     <a href="" onclick="$('#browseralert').slideUp(); return false;" id="browseralertclose">(dismiss)</a>
-    </p>
+    </p> #}
   <div id="tabs">
     <ul>
       <li><a href="#overview">Overview</a></li>
@@ -50,7 +50,8 @@
 {% endblock %}
 {% block footer %}
   <p>
-    DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies organised by the Social Primates.
+    DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies organised by the
+    <a href="http://socialprimate.in/">Social Primates</a>.
   </p>
 {% endblock %}
 {% block footerscripts %}
@@ -70,11 +71,11 @@
     });
   </script>
 
-  <script type="text/javascript">
+{#  <script type="text/javascript">
   $(function() {
     if ($.browser.msie) {
       $("#browseralert").slideDown('slow');
     }
   });
-  </script>
+  </script> #}
 {% endblock %}
