@@ -2,7 +2,19 @@
 {% from 'macros.html' import ajaxform %}
 {% block title %}‹! doctype html5 ›{% endblock %}
 {% block header %}
-  <h1><span class="brkt">&lt;</span><span class="bang">!</span>doctype html<sup>5</sup><span class="domain">.in</span><span class="brkt">&gt;</span></h1>
+  <div itemscope itemtype="http://data-vocabulary.org/Event">
+    <div id="date-location">
+      <time itemprop="startDate" datetime="2010-10-09T09:00+05:30"><strong>October 9</strong>, 2010</time><br/>
+      <time itemprop="endDate" datetime="2010-10-09T18:00+05:30"></time>
+      at <span itemprop="location">IIM Bangalore</span>
+      <span itemprop="geo" itemscope itemtype="http://data-vocabulary.org/Geo">
+        <meta itemprop="latitude" content="12.8937"/>
+        <meta itemprop="longitude" content="77.6"/>
+      </span>
+      <meta itemprop="eventType" content="Conference"/>
+    </div>
+    <h1><a href="{{ url_for('index') }}" itemprop="url"><span class="brkt">&lt;</span><span class="bang">!</span><span itemprop="summary">DocType HTML<sup>5</sup></span><span class="domain">.in</span><span class="brkt">&gt;</span></a></h1>
+  </div>
 {% endblock %}
 {% block content %}
 {#  <p id="browseralert" style="display: none;">

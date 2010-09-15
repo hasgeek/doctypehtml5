@@ -5,6 +5,7 @@
 Website server for doctypehtml5.in
 """
 
+from datetime import datetime
 from flask import Flask, request, render_template, redirect, url_for
 from flaskext.sqlalchemy import SQLAlchemy
 from flaskext.wtf import Form, TextField, TextAreaField
@@ -33,6 +34,10 @@ class Participant(db.Model):
     twitter = db.Column(db.Unicode(80), nullable=True)
     #: User's reason for wanting to attend
     reason = db.Column(db.Text, nullable=False)
+    #: Date the user registered
+    regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    #: Submitter's IP address, for logging (45 chars to accommodate an IPv6 address)
+    ipaddr = db.Column(db.Text(45), nullable=False)
     #: Has the user's application been approved?
     approved = db.Column(db.Boolean, default=False, nullable=False)
     #: RSVP status codes:
@@ -75,6 +80,7 @@ def submit():
     if form.validate_on_submit():
         participant = Participant()
         form.populate_obj(participant)
+        participant.ipaddr = request.environ['REMOTE_ADDR']
         db.session.add(participant)
         db.session.commit()
         return render_template('regsuccess.html')

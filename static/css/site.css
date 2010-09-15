@@ -133,6 +133,12 @@ footer {
 h1 {
     font-size: 300%;
     margin: 0.5em 0;
+    text-transform: lowercase;
+}
+
+h1 a, h1 a:hover, h1 a:active, h1 a:visited {
+    color: inherit;
+    border-bottom: 0;
 }
 
 h1 sup {
@@ -150,6 +156,12 @@ h1 .bang {
 
 h1 .domain {
     color: #999;
+}
+
+#date-location {
+    float: right;
+    /* Tested in Chrome Mac for baseline alignment with h1 */
+    padding-top: 0.85em;
 }
 
 /* Generic */
