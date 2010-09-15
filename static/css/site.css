@@ -197,6 +197,16 @@ h3 + p, h3 + ul, h3 + ol {
     margin-top: 0;
 }
 
+.regsuccess {
+    border: 1px solid red;
+    padding: 0.5em;
+    border-radius: 0.25em;
+}
+
+.regsuccess:before {
+    content: "\2713 "
+}
+
 /* Forms */
 form dt {
     font-weight: bold;
@@ -216,6 +226,27 @@ form dd {
 form p.hint {
     margin: 0;
     font-size: 85%;
+}
+
+form p.error {
+    font-size: 90%;
+    display: inline;
+    background: #f7ea6f;
+    padding: 0.25em;
+    border: 1px solid black;
+    border-top: 0;
+    margin-left: 1em;
+    -moz-border-radius-bottomleft: 0.25em;
+    -webkit-border-bottom-left-radius: 0.25em;
+    border-bottom-left-radius: 0.25em;
+    -moz-border-radius-bottomright: 0.25em;
+    -webkit-border-bottom-right-radius: 0.25em;
+    border-bottom-right-radius: 0.25em;
+}
+
+form textarea {
+    width: 80%;
+    min-height: 5em;
 }
 
 /* jQuery UI customisation */

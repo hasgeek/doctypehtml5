@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from 'macros.html' import ajaxform %}
 {% block title %}‹! doctype html5 ›{% endblock %}
 {% block header %}
   <h1><span class="brkt">&lt;</span><span class="bang">!</span>doctype html<sup>5</sup><span class="domain">.in</span><span class="brkt">&gt;</span></h1>
@@ -50,12 +51,12 @@
 {% endblock %}
 {% block footer %}
   <p>
-    DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies organised by the
-    <a href="http://socialprimate.in/">Social Primates</a>.
+    DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies.
   </p>
 {% endblock %}
 {% block footerscripts %}
   <script type="text/javascript">
+    // Activate jQuery UI tabs
     $(function() {
       var mainTabs = $("#tabs").tabs({
         select: function(ev, ui) {
@@ -63,6 +64,7 @@
           return true;
         }
       });
+      // Activate Sammy for tab URL
       $.sammy(function() {
         this.get('#:tab', function(context) {
           mainTabs.tabs('select', '#' + this.params['tab']);
@@ -70,6 +72,9 @@
       }).run();
     });
   </script>
+  {# Activate jQuery Form. This should be in registration.html,
+     but jQuery isn't loaded yet at that point. #}
+  {{ ajaxform('regform') }}
 
 {#  <script type="text/javascript">
   $(function() {

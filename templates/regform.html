@@ -1,0 +1,5 @@
+{% from 'macros.html' import renderform, ajaxform %}
+{{ renderform(regform, 'regform', url_for('submit')+'#registration', 'Register') }}
+{% if ajax_re_register %}
+  {{ ajaxform('regform') }}
+{% endif %}
