@@ -49,6 +49,7 @@ blockquote:before {
     margin-top: -0.25em;
 }
 
+/* # Disabled due to conflict with Twitter widget. This doesn't float well.
 blockquote:after {
     content: "\201D";
     float: right;
@@ -57,6 +58,7 @@ blockquote:after {
     margin-right: -0.3em;
     margin-top: -0.25em;
 }
+*/
 
 p.attribution {
     text-align: left;
@@ -179,6 +181,17 @@ a, a:hover, a:active, a:visited {
 
 a:hover {
     border-bottom: 1px solid;
+}
+
+/* Twitter widget */
+
+#twidget {
+    float: right;
+    margin: 0 0 1em 1em;
+}
+
+#twidget a, #twidget a:hover, #twidget a:active, #twidget a:visited {
+    border-bottom: 0;
 }
 
 /* Headings */

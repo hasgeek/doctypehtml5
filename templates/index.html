@@ -89,6 +89,41 @@
      but jQuery isn't loaded yet at that point. #}
   {{ ajaxform('regform') }}
 
+  {# Twitter widget #}
+  <script type="text/javascript" src="http://widgets.twimg.com/j/2/widget.js"></script>
+  <script type="text/javascript">
+  $(function() {
+    new TWTR.Widget({
+      id: 'twidget',
+      version: 2,
+      type: 'profile',
+      rpp: 4,
+      interval: 6000,
+      width: 250,
+      height: 300,
+      theme: {
+        shell: {
+          background: '#e6e6e6',
+          color: '#444444'
+        },
+        tweets: {
+          background: '#ffffff',
+          color: '#444444',
+          links: '#607890'
+        }
+      },
+      features: {
+        scrollbar: true,
+        loop: false,
+        live: true,
+        hashtags: true,
+        timestamp: true,
+        avatars: false,
+        behavior: 'all'
+      }
+    }).render().setUser('doctypehtml5').start();
+  });
+  </script>
 {#  <script type="text/javascript">
   $(function() {
     if ($.browser.msie) {

@@ -32,6 +32,8 @@ class Participant(db.Model):
     jobtitle = db.Column(db.Unicode(80), nullable=False)
     #: User's twitter id (optional)
     twitter = db.Column(db.Unicode(80), nullable=True)
+    #: T-shirt size (XS, S, M, L, XL, XXL, XXXL)
+    #tshirtsize = db.Column(db.Unicode(1))
     #: User's reason for wanting to attend
     reason = db.Column(db.Text, nullable=False)
     #: Date the user registered
