@@ -19,7 +19,7 @@
       {% for row in data -%}
         <tr>
           {% for key, headerlabel in headers -%}
-            <td>{{ row[key] }}</td>
+            <td>{{ row[key]|e }}</td>
           {%- endfor %}
         </tr>
       {%- endfor %}
