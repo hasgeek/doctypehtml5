@@ -6,6 +6,17 @@
   <h1>{{ title|e }}</h1>
 {% endblock %}
 
+{% block pageheaders %}
+  <style type="text/css">
+    #container {
+      padding-top: 0;
+    }
+    #container, footer {
+      max-width: 100%;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <table class="listing">
     <thead>

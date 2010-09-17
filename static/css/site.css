@@ -18,6 +18,8 @@ footer {
     max-width: 960px;
     margin-left: auto;
     margin-right: auto;
+    padding-left: 1em;
+    padding-right: 1em;
 }
 
 #container {
