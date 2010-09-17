@@ -315,3 +315,43 @@ form textarea {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+/* Listing table */
+
+table.listing {
+    width: 100%;
+    border-top: 1px solid #8cacbb;
+    border-bottom: 1px solid #8cacbb;
+    border-collapse: collapse;
+    font-size: 85%;
+}
+
+.listing th, .listing td {
+    padding: 0.2em 1em;
+    text-align: left;
+    vertical-align: top;
+    border-left: 1px solid #8cacbb;
+    border-right: 1px solid #8cacbb;
+}
+
+.listing thead th {
+    background: #dee7ec;
+    padding: 0.4em 1em 0.2em;
+}
+
+.listing thead th, .listing thead td {
+    border-bottom: 1px solid #8cacbb;
+}
+
+.listing tbody th, .listing tbody td {
+    background: #eef3f5;
+}
+
+.listing tfoot th, .listing tfoot td {
+    border-top: 1px solid #8cacbb;
+    background: #eef3f5;
+}
+
+.listing th.num, .listing td.num {
+    text-align: right;
+}

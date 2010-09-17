@@ -6,3 +6,5 @@ TYPEKIT_CODE = ''
 SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
 #: Secret key
 SECRET_KEY = 'make this something random'
+#: Access keys for /reasons/<key>
+ACCESSKEY_REASONS = ['test']

@@ -6,7 +6,7 @@ Website server for doctypehtml5.in
 """
 
 from datetime import datetime
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, abort, request, render_template, redirect, url_for
 from flaskext.sqlalchemy import SQLAlchemy
 from flaskext.wtf import Form, TextField, TextAreaField
 from flaskext.wtf import Required, Email
@@ -94,6 +94,18 @@ def submit():
             # TODO: This changes URL. It shouldn't.
             return render_template('index.html', regform=form)
 
+# ---------------------------------------------------------------------------
+# Admin backend
+
+@app.route('/admin/reasons/<key>')
+def admin_reasons(key):
+    if key and key in app.config['ACCESSKEY_REASONS']:
+        headers = [('no', u'Sl No'), ('reason', u'Reason')] # List of (key, label)
+        data = ({'no': i+1, 'reason': p.reason} for i, p in enumerate(Participant.query.all()))
+        return render_template('datatable.html', headers=headers, data=data,
+                               title=u'Reasons for attending')
+    else:
+        abort(401)
 
 # ---------------------------------------------------------------------------
 # Config and startup

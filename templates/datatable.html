@@ -1,0 +1,34 @@
+{# Render a data table. Nothing fancy #}
+{% extends "layout.html" %}
+{% block title %}{{ title|e }}{% endblock %}
+
+{% block header %}
+  <h1>{{ title|e }}</h1>
+{% endblock %}
+
+{% block content %}
+  <table class="listing">
+    <thead>
+      <tr>
+        {% for key, label in headers -%}
+          <th>{{ label|e }}</th>
+        {%- endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data -%}
+        <tr>
+          {% for key, headerlabel in headers -%}
+            <td>{{ row[key] }}</td>
+          {%- endfor %}
+        </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block footer %}
+  <p>
+    This is a restricted page. Do not share this URL.
+  </p>
+{% endblock %}
