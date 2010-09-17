@@ -329,7 +329,7 @@ table.listing {
 }
 
 .listing th, .listing td {
-    padding: 0.2em 1em;
+    padding: 0.2em 0.5em;
     text-align: left;
     vertical-align: top;
     border-left: 1px solid #8cacbb;
@@ -338,7 +338,7 @@ table.listing {
 
 .listing thead th {
     background: #dee7ec;
-    padding: 0.4em 1em 0.2em;
+    padding: 0.4em 0.5em 0.2em;
 }
 
 .listing thead th, .listing thead td {

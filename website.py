@@ -132,6 +132,8 @@ def admin_data(key, skipreason=False):
                    ('jobtitle', u'Job Title'),
                    ('twitter',  u'Twitter'),
                    ('ipaddr',   u'IP Address'),
+                   ('approved', u'Approved'),
+                   ('RSVP',     u'RSVP'),
                    ]
         if not skipreason:
             headers.append(('reason',   u'Reason'))
@@ -143,10 +145,12 @@ def admin_data(key, skipreason=False):
                  'jobtitle': p.jobtitle,
                  'twitter': p.twitter,
                  'ipaddr': p.ipaddr,
+                 'approved': {True: 'Yes', False: 'No'}[p.approved],
+                 'rsvp': {'A': u'', 'Y': u'Yes', 'M': u'Maybe', 'N': u'No'}[p.rsvp],
                  'reason': p.reason,
                  } for i, p in enumerate(Participant.query.all()))
         return render_template('datatable.html', headers=headers, data=data,
-                               title=u'List of participants')
+                               title=u'Participant data')
     else:
         abort(401)
 
