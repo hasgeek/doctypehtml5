@@ -10,7 +10,7 @@ from flask import Flask, abort, request, render_template, redirect, url_for
 from flaskext.sqlalchemy import SQLAlchemy
 from flaskext.wtf import Form, TextField, TextAreaField
 from flaskext.wtf import Required, Email
-
+from pytz import utc, timezone
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -94,6 +94,7 @@ def submit():
             # TODO: This changes URL. It shouldn't.
             return render_template('index.html', regform=form)
 
+
 # ---------------------------------------------------------------------------
 # Admin backend
 
@@ -106,6 +107,53 @@ def admin_reasons(key):
                                title=u'Reasons for attending')
     else:
         abort(401)
+
+@app.route('/admin/list/<key>')
+def admin_list(key):
+    if key and key in app.config['ACCESSKEY_LIST']:
+        headers = [('no', u'Sl No'), ('name', u'Name'), ('company', u'Company'),
+                   ('jobtitle', u'Job Title')]
+        data = ({'no': i+1, 'name': p.fullname, 'company': p.company,
+                 'jobtitle': p.jobtitle} for i, p in enumerate(Participant.query.all()))
+        return render_template('datatable.html', headers=headers, data=data,
+                               title=u'List of participants')
+    else:
+        abort(401)
+
+@app.route('/admin/data/<key>')
+def admin_data(key, skipreason=False):
+    if key and key in app.config['ACCESSKEY_DATA']:
+        tz = timezone(app.config['TIMEZONE'])
+        headers = [('no',       u'Sl No'),
+                   ('regdate',  u'Date'),
+                   ('name',     u'Name'),
+                   ('email',    u'Email'),
+                   ('company',  u'Company'),
+                   ('jobtitle', u'Job Title'),
+                   ('twitter',  u'Twitter'),
+                   ('ipaddr',   u'IP Address'),
+                   ]
+        if not skipreason:
+            headers.append(('reason',   u'Reason'))
+        data = ({'no': i+1,
+                 'regdate': utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M'),
+                 'name': p.fullname,
+                 'email': p.email,
+                 'company': p.company,
+                 'jobtitle': p.jobtitle,
+                 'twitter': p.twitter,
+                 'ipaddr': p.ipaddr,
+                 'reason': p.reason,
+                 } for i, p in enumerate(Participant.query.all()))
+        return render_template('datatable.html', headers=headers, data=data,
+                               title=u'List of participants')
+    else:
+        abort(401)
+
+@app.route('/admin/dnr/<key>')
+def admin_data_no_reason(key):
+    return admin_data(key, skipreason=True)
+
 
 # ---------------------------------------------------------------------------
 # Config and startup
