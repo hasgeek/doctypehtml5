@@ -1,15 +1,15 @@
 {% extends "layout.html" %}
 {% from 'macros.html' import ajaxform %}
-{% block title %}‹! doctype html5 ›{% endblock %}
+{% block title %}DocType HTML5{% endblock %}
 {% block header %}
   <div itemscope itemtype="http://data-vocabulary.org/Event">
     <div id="date-location">
       <time itemprop="startDate" datetime="2010-10-09T09:00+05:30"><strong>October 9</strong>, 2010</time><br/>
       <time itemprop="endDate" datetime="2010-10-09T18:00+05:30"></time>
-      at <span itemprop="location">IIM Bangalore</span>
+      at <span itemprop="location">IIM Bangalore</span><br/>
       <span itemprop="geo" itemscope itemtype="http://data-vocabulary.org/Geo">
         <meta itemprop="latitude" content="12.8937"/>
-        <meta itemprop="longitude" content="77.6"/>
+        <meta itemprop="longitude" content="77.6008"/>
       </span>
       <meta itemprop="eventType" content="Conference"/>
     </div>
@@ -31,10 +31,10 @@
     <ul>
       <li><a href="#overview">Overview</a></li>
       <li><a href="#agenda">Agenda</a></li>
-      {#<li><a href="#schedule">Schedule</a></li>#}
       <li><a href="#registration">Registration</a></li>
+      <li><a href="#schedule">Schedule</a></li>
+      <li><a href="#venue">Venue</a></li>
       <li><a href="#faq">FAQ</a></li>
-      {#<li><a href="#sponsor">Sponsors</a></li>#}
       <li><a href="#team">Team</a></li>
     </ul>
     <div id="overview">
@@ -43,20 +43,18 @@
     <div id="agenda">
       {% include 'agenda.html' %}
     </div>
-    {#
+    <div id="registration">
+      {% include 'registration.html' %}
+    </div>
     <div id="schedule">
       {% include 'schedule.html' %}
     </div>
-    #}
-    <div id="registration">
-      {% include 'registration.html' %}
+    <div id="venue">
+      {% include 'venue.html' %}
     </div>
     <div id="faq">
       {% include 'faq.html' %}
     </div>
-    {#<div id="sponsor">
-      {% include 'sponsors.html' %}
-    </div>#}
     <div id="team">
       {% include 'team.html' %}
     </div>
@@ -64,7 +62,7 @@
 {% endblock %}
 {% block footer %}
   <p>
-    DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies.
+    DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies, hosted by NSRCEL at IIMB.
   </p>
 {% endblock %}
 {% block footerscripts %}
@@ -90,39 +88,71 @@
   {{ ajaxform('regform') }}
 
   {# Twitter widget #}
-  <script type="text/javascript" src="http://widgets.twimg.com/j/2/widget.js"></script>
   <script type="text/javascript">
   $(function() {
-    new TWTR.Widget({
-      id: 'twidget',
-      version: 2,
-      type: 'profile',
-      rpp: 4,
-      interval: 6000,
-      width: 250,
-      height: 300,
-      theme: {
-        shell: {
-          background: '#e6e6e6',
-          color: '#444444'
-        },
-        tweets: {
-          background: '#ffffff',
-          color: '#444444',
-          links: '#607890'
-        }
+    $.ajax({
+      url: 'http://widgets.twimg.com/j/2/widget.js',
+      dataType: 'script',
+      success: function() {
+        new TWTR.Widget({
+          id: 'twidget',
+          version: 2,
+          type: 'profile',
+          rpp: 4,
+          interval: 6000,
+          width: 250,
+          height: 300,
+          theme: {
+            shell: {
+              background: '#e6e6e6',
+              color: '#444444'
+            },
+            tweets: {
+              background: '#ffffff',
+              color: '#444444',
+              links: '#607890'
+            }
+          },
+          features: {
+            scrollbar: true,
+            loop: false,
+            live: true,
+            hashtags: true,
+            timestamp: true,
+            avatars: false,
+            behavior: 'all'
+          }
+        }).render().setUser('doctypehtml5').start();
       },
-      features: {
-        scrollbar: true,
-        loop: false,
-        live: true,
-        hashtags: true,
-        timestamp: true,
-        avatars: false,
-        behavior: 'all'
-      }
-    }).render().setUser('doctypehtml5').start();
+    });
   });
+  </script>
+
+  {# Google Maps for venue #}
+  <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <script type="text/javascript">
+    $(function() {
+      var latlng = new google.maps.LatLng(12.8937, 77.6008);
+      var mapOptions = {
+        zoom: 16,
+        center: latlng,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      var map = new google.maps.Map(document.getElementById('venuemap'), mapOptions);      
+      var marker = new google.maps.Marker({
+        position: latlng, 
+        map: map, 
+        title: "IIMB Auditorium"
+      });
+      // Setup map to resize when tab is shown
+      $('#tabs').bind('tabsshow', function(event, ui) {
+          if (ui.panel.id == "venue") {
+              google.maps.event.trigger(map, "resize");
+              // XXX: Wish this could be avoided, but resizing isn't enough.
+              map.setCenter(latlng);
+          }
+      });
+    });
   </script>
 {#  <script type="text/javascript">
   $(function() {
