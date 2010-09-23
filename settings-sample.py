@@ -14,3 +14,22 @@ ACCESSKEY_REASONS = ['test']
 ACCESSKEY_LIST = ['test']
 #: Access key for /admin/data/<key> and /admin/dnr/<key>
 ACCESSKEY_DATA = ['test']
+#: Access key for /admin/approve/<key>
+ACCESSKEY_APPROVE = ['test']
+#: MailChimp API key to sync participant list
+#: If you don't want to use MailChimp, leave this blank
+MAILCHIMP_API_KEY = ''
+#: MailChimp list id to put participants in.
+#: The list id can be found in the list's settings
+#: or via the API
+MAILCHIMP_LIST_ID = ''
+#: Mail settings
+#: MAIL_SERVER : default 'localhost'
+#: MAIL_PORT : default 25
+#: MAIL_USE_TLS : default False
+#: MAIL_USE_SSL : default False
+#: MAIL_USERNAME : default None
+#: MAIL_PASSWORD : default None
+#: DEFAULT_MAIL_SENDER : default None
+MAIL_SERVER = 'localhost'
+DEFAULT_MAIL_SENDER = ('DocType HTML5', 'test@example.com')

@@ -1,0 +1,82 @@
+{# Approve participants #}
+{% extends "layout.html" %}
+{% block title %}Approve Participants{% endblock %}
+
+{% block header %}
+  <h1>{{ self.title() }}</h1>
+{% endblock %}
+
+{% block pageheaders %}
+  <style type="text/css">
+    #container {
+      padding-top: 0;
+    }
+    #container, footer {
+      max-width: 100%;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <table class="listing">
+    <thead>
+      <tr>
+        <th>Sl No</th>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Company</th>
+        <th>Job Title</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i, p in enumerate(participants) -%}
+        <tr>
+          <td rowspan="2" class="wide">{{ i+1 }}</td>
+          <td>{{ utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M')|e }}</td>
+          <td>{{ p.fullname|e }}</td>
+          <td>{{ p.email|e }}</td>
+          <td>{{ p.company|e }}</td>
+          <td>{{ p.jobtitle|e }}</td>
+          <td rowspan="2" class="wide">
+            {%- if p.approved -%}
+              {% if config['DEBUG'] %}
+                <form id="approve{{ i }}" action="{{ url_for('approve', key=key) }}" method="POST">
+                  Approved
+                  <input type="hidden" name="id" value="{{ p.id }}"/>
+                  <input type="submit" name="action.undo" value="Undo"/>
+                </form>
+              {% else %}
+                Approved
+              {% endif %}
+            {%- else -%}
+            <form id="approve{{ i }}" action="{{ url_for('approve', key=key) }}" method="POST">
+              <input type="hidden" name="id" value="{{ p.id }}"/>
+              <input type="submit" name="action.approve" value="Approve"/>
+            </form>
+            {%- endif -%}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="5" class="wide">{{ p.reason|e }}</td>
+        </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block footer %}
+  <p>
+    This is a restricted page. Do not share this URL.
+  </p>
+{% endblock %}
+{% block footerscripts %}
+  <script type="text/javascript">
+    $(function() {
+      {% for i,p in enumerate(participants) -%}
+        $("{{ '#approve%d' % i }}").ajaxForm({target: "{{ '#approve%d' % i }}", replaceTarget: true});
+      {% endfor -%}
+    });
+  </script>
+{% endblock %}

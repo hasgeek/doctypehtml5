@@ -8,12 +8,19 @@ Website server for doctypehtml5.in
 from datetime import datetime
 from flask import Flask, abort, request, render_template, redirect, url_for
 from flaskext.sqlalchemy import SQLAlchemy
+from flaskext.mail import Mail, Message
 from flaskext.wtf import Form, TextField, TextAreaField
 from flaskext.wtf import Required, Email
 from pytz import utc, timezone
+from markdown import markdown
+try:
+    from greatape import MailChimp, MailChimpError
+except ImportError:
+    MailChimp = None
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
+mail = Mail(app)
 
 
 # ---------------------------------------------------------------------------
@@ -158,6 +165,73 @@ def admin_data(key, skipreason=False):
 def admin_data_no_reason(key):
     return admin_data(key, skipreason=True)
 
+@app.route('/admin/approve/<key>', methods=['GET'])
+def approveform(key):
+    if key and key in app.config['ACCESSKEY_APPROVE']:
+        tz = timezone(app.config['TIMEZONE'])
+        return render_template('approve.html', participants=Participant.query.all(),
+                               utc=utc, tz=tz, enumerate=enumerate, key=key)
+
+@app.route('/admin/approve/<key>', methods=['POST'])
+def approve(key):
+    if key and key in app.config['ACCESSKEY_APPROVE']:
+        p = Participant.query.get(request.form['id'])
+        if not p:
+            status = 'No such user'
+        else:
+            if 'action.undo' in request.form:
+                p.approved = False
+                status = 'Undone!'
+                # Remove from MailChimp
+                if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:
+                    mc = MailChimp(app.config['MAILCHIMP_API_KEY'])
+                    try:
+                        mc.listUnsubscribe(
+                            id = app.config['MAILCHIMP_LIST_ID'],
+                            email_address = p.email,
+                            send_goodbye = False,
+                            send_notify = False,
+                            )
+                        pass
+                    except MailChimpError, e:
+                        status = e.msg
+                db.session.commit()
+            elif 'action.approve' in request.form:
+                p.approved = True
+                status = "Tada!"
+                mailsent = False
+                # 1. Add to MailChimp
+                if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:
+                    mc = MailChimp(app.config['MAILCHIMP_API_KEY'])
+                    try:
+                        mc.listSubscribe(
+                            id = app.config['MAILCHIMP_LIST_ID'],
+                            email_address = p.email,
+                            merge_vars = {'FULLNAME': p.fullname,
+                                          'JOBTITLE': p.jobtitle,
+                                          'COMPANY': p.company,
+                                          'TWITTER': p.twitter},
+                            double_optin = False
+                            )
+                    except MailChimpError, e:
+                        status = e.msg
+                        if e.code == 214: # Already subscribed
+                            mailsent = True
+                # 2. Send notice of approval
+                if not mailsent:
+                    msg = Message(subject="Your registration has been approved",
+                                  recipients = [p.email])
+                    msg.body = render_template("approve_notice.md", p=p)
+                    msg.html = markdown(msg.body)
+                    mail.send(msg)
+                db.session.commit()
+            else:
+                status = 'Unknown action'
+        if request.is_xhr:
+            return status
+        else:
+            return redirect(url_for('approveform', key=key), code=303)
+
 
 # ---------------------------------------------------------------------------
 # Config and startup
@@ -174,4 +248,7 @@ except ImportError:
 db.create_all()
 
 if __name__ == '__main__':
+    if MailChimp is None:
+        import sys
+        print >> sys.stderr, "greatape is not installed. MailChimp support will be disabled."
     app.run('0.0.0.0', 8000, debug=True)
