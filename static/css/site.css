@@ -81,6 +81,11 @@ p.attribution {
     padding: 0.5em;
     background-color: #e6e6e6;
     border-radius: 0.25em;
+    border: 1px solid #e6e6e6;
+}
+
+.schedule .breakslot {
+    background-color: #ccc;
 }
 
 .schedule .dayslot .icon {
