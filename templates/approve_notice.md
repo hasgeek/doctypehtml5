@@ -18,7 +18,7 @@ browsers now include HTML5 support and mobile browsers are fast catching up.
 
 ### Staying updated
 
-DocType HTML5 is a free event, but all participants must be registered
+DocType HTML5 is a **free** event, but all participants must be registered
 via the website. If you'd like to bring a friend along, tell them to
 [sign up][].
 
@@ -41,7 +41,7 @@ discussing them. To help us make the most of it,
 The event's [agenda][] is under revision based on the reasons you submitted
 when registering. Your continued feedback will help refine it. You can stay
 updated on progress by following us on [Twitter][]. We will send you an email
-update on the day prior to the event.
+update a day prior to the event.
 
 Once again, thanks for registering, and see you on October 9!
 

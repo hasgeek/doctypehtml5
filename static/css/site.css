@@ -20,6 +20,9 @@ footer {
     margin-right: auto;
     padding-left: 1em;
     padding-right: 1em;
+    /* text-align: center; */
+    margin-top: 2em;
+    margin-bottom: 1em;
 }
 
 #container {
@@ -372,4 +375,14 @@ table.listing {
 #venuemap {
     width: 100%;
     height: 500px;
+}
+
+/* Footer */
+.tile {
+    display: inline-block;
+    text-align: center;
+}
+
+.tile img {
+    margin: 1em;
 }

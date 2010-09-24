@@ -64,6 +64,17 @@
   <p>
     DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies, hosted by NSRCEL at IIMB.
   </p>
+{# <!-- The CSS for this bit isn't ready yet. -->
+  <div class="tile">
+    <img src="{{ url_for('static', filename='img/logos/microsoft.png') }}"/><br/>
+    Platinum Sponsor
+  </div>
+  <div class="tile">
+    <img src="{{ url_for('static', filename='img/logos/iimb.png') }}"/>
+    <img src="{{ url_for('static', filename='img/logos/nsrcel.jpg') }}"/><br/>
+    Event Hosts
+  </div>
+#}
 {% endblock %}
 {% block footerscripts %}
   <script type="text/javascript">
@@ -138,10 +149,10 @@
         center: latlng,
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
-      var map = new google.maps.Map(document.getElementById('venuemap'), mapOptions);      
+      var map = new google.maps.Map(document.getElementById('venuemap'), mapOptions);
       var marker = new google.maps.Marker({
-        position: latlng, 
-        map: map, 
+        position: latlng,
+        map: map,
         title: "IIMB Auditorium"
       });
       // Setup map to resize when tab is shown
