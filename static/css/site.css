@@ -20,7 +20,7 @@ footer {
     margin-right: auto;
     padding-left: 1em;
     padding-right: 1em;
-    /* text-align: center; */
+    text-align: center;
     margin-top: 2em;
     margin-bottom: 1em;
 }
@@ -114,32 +114,6 @@ p.attribution {
     font-size: 85%;
 }
 
-/* Sticky footer. FIXME: There are extra margins somewhere, but where? */
-/* html, body {
-    height: 100%;
-}
-#container {
-    min-height: 100%;
-}
-#main {
-    overflow: auto;
-	padding-bottom: 50px;
-}
-footer {
-    position: relative;
-	margin-top: -50px;
-	height: 50px;
-	clear: both;
-} */
-/*Opera Fix for sticky footer*/
-/* body:before {
-	content:"";
-	height: 100%;
-	float: left;
-	width: 0;
-	margin-top: -32767px;/
-} */
-
 /* Logo type */
 
 h1 {
@@ -149,7 +123,7 @@ h1 {
 }
 
 h1 a, h1 a:hover, h1 a:active, h1 a:visited {
-    color: inherit;
+    color: #444; /* IE 7 doesn't understand "color: inherit;" */
     border-bottom: 0;
 }
 
@@ -378,11 +352,39 @@ table.listing {
 }
 
 /* Footer */
+.sponsorlogos {
+    margin-top: 2em;
+}
+
 .tile {
     display: inline-block;
     text-align: center;
+    margin: 0 1em;
+    position: relative;
+}
+
+.tile .title {
+    font-weight: bold;
 }
 
 .tile img {
-    margin: 1em;
+    margin: 0.5em;
+}
+
+.tile a, .tile a:hover, .tile a:active, .tile a:visited {
+    text-decoration: none;
+    border-bottom: 0;
+}
+
+.tile .popup {
+    position: absolute;
+    width: 10em;
+    display: none;
+    background-color: #e6e6e6;
+    border: 1px solid #aaa;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    box-shadow: 0px 2px 5px #ccc;
+    -webkit-box-shadow: 0px 2px 5px #ccc;
+    -moz-box-shadow: 0px 2px 5px #ccc;
 }

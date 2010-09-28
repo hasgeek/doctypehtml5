@@ -27,6 +27,15 @@
   		#container {display:table;height:100%}
   	</style>
   <![endif]-->
+  <!--[if lt IE 8 ]>
+    <style type="text/css">
+      .tile {
+        zoom: 1;
+        *display: inline;
+        _height: 100px;
+      }
+    </style>
+  <![endif]-->      
 {%- if config['TYPEKIT_CODE'] %}
   <script type="text/javascript" src="http://use.typekit.com/{{ config['TYPEKIT_CODE'] }}.js"></script>
   <script type="text/javascript">try{Typekit.load();}catch(e){}</script>

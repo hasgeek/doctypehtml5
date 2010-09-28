@@ -62,19 +62,43 @@
 {% endblock %}
 {% block footer %}
   <p>
-    DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies, hosted by NSRCEL at IIMB.
+    DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies.
   </p>
-{# <!-- The CSS for this bit isn't ready yet. -->
-  <div class="tile">
-    <img src="{{ url_for('static', filename='img/logos/microsoft.png') }}"/><br/>
-    Platinum Sponsor
+  <div class="sponsorlogos">
+    <div id="sponsor-platinum" class="tile">
+      <span class="title">Platinum Sponsor</span><br/>
+      <a href="http://www.microsoft.com/">
+        <img src="{{ url_for('static', filename='img/logos/microsoft.jpg') }}" width="140" height="70"
+            alt="Microsoft"/>
+      </a>
+    </div>
+    <div id="sponsor-gold" class="tile bubbleInfo">
+      <span class="title">Gold Sponsor</span><br/>
+      {% block sponsorshipopen %}
+        <img class="trigger" src="{{ url_for('static', filename='img/logos/blank.png') }}" width="90" height="70" alt="Available"/>
+        <div class="popup">
+          Sponsor position available.
+          <a href="mailto:%63%6f%6e%74%61%63%74%40%64%6f%63%74%79%70%65%68%74%6d%6c%35%2e%69%6e">Write to us</a>.        
+        </div>
+      {% endblock %}
+    </div>
+    <div id="sponsor-silver" class="tile bubbleInfo">
+      <span class="title">Silver Sponsor</span><br/>
+      {{ self.sponsorshipopen() }}
+    </div>
+    <div id="sponsor-hosts" class="tile">
+      <span class="title">Event Hosts</span><br/>
+      <a href="http://www.iimb.ernet.in/">
+        <img src="{{ url_for('static', filename='img/logos/iimb.png') }}" width="91" height="70"
+            alt="Indian Institute of Management, Bangalore"/>
+      </a>
+      <a href="http://www.nsrcel.org/">
+        <img src="{{ url_for('static', filename='img/logos/nsrcel.jpg') }}" width="92" height="70"
+            alt="NS Raghavan Centre for Entrepreneurship Learning"/>
+      </a>
+    </div>
   </div>
-  <div class="tile">
-    <img src="{{ url_for('static', filename='img/logos/iimb.png') }}"/>
-    <img src="{{ url_for('static', filename='img/logos/nsrcel.jpg') }}"/><br/>
-    Event Hosts
-  </div>
-#}
+
 {% endblock %}
 {% block footerscripts %}
   <script type="text/javascript">
@@ -95,48 +119,109 @@
     });
   </script>
   {# Activate jQuery Form. This should be in registration.html,
-     but jQuery isn't loaded yet at that point. #}
+     but jQuery isn't loaded at that point. #}
   {{ ajaxform('regform') }}
+
+  {# Popup for sponsor logos #}
+  <script type="text/javascript">
+   // Popup code from http://jqueryfordesigners.com/coda-popup-bubbles/
+   // License is not specified.
+    $(function () {
+        $('.bubbleInfo').each(function () {
+            var distance = 10;
+            var time = 250;
+            var hideDelay = 500;
+
+            var hideDelayTimer = null;
+
+            var beingShown = false;
+            var shown = false;
+            var trigger = $('.trigger', this);
+            var info = $('.popup', this).css('opacity', 0);
+
+
+            $([trigger.get(0), info.get(0)]).mouseover(function () {
+                if (hideDelayTimer) clearTimeout(hideDelayTimer);
+                if (beingShown || shown) {
+                    // don't trigger the animation again
+                    return;
+                } else {
+                    // reset position of info box
+                    beingShown = true;
+
+                    info.css({
+                        top: -10,
+                        left: -33,
+                        display: 'block'
+                    }).animate({
+                        top: '-=' + distance + 'px',
+                        opacity: 1
+                    }, time, 'swing', function() {
+                        beingShown = false;
+                        shown = true;
+                    });
+                }
+
+                return false;
+            }).mouseout(function () {
+                if (hideDelayTimer) clearTimeout(hideDelayTimer);
+                hideDelayTimer = setTimeout(function () {
+                    hideDelayTimer = null;
+                    info.animate({
+                        top: '-=' + distance + 'px',
+                        opacity: 0
+                    }, time, 'swing', function () {
+                        shown = false;
+                        info.css('display', 'none');
+                    });
+
+                }, hideDelay);
+
+                return false;
+            });
+        });
+    });
+  </script>
 
   {# Twitter widget #}
   <script type="text/javascript">
-  $(function() {
-    $.ajax({
-      url: 'http://widgets.twimg.com/j/2/widget.js',
-      dataType: 'script',
-      success: function() {
-        new TWTR.Widget({
-          id: 'twidget',
-          version: 2,
-          type: 'profile',
-          rpp: 4,
-          interval: 6000,
-          width: 250,
-          height: 300,
-          theme: {
-            shell: {
-              background: '#e6e6e6',
-              color: '#444444'
+    $(function() {
+      $.ajax({
+        url: 'http://widgets.twimg.com/j/2/widget.js',
+        dataType: 'script',
+        success: function() {
+          new TWTR.Widget({
+            id: 'twidget',
+            version: 2,
+            type: 'profile',
+            rpp: 4,
+            interval: 6000,
+            width: 250,
+            height: 300,
+            theme: {
+              shell: {
+                background: '#e6e6e6',
+                color: '#444444'
+              },
+              tweets: {
+                background: '#ffffff',
+                color: '#444444',
+                links: '#607890'
+              }
             },
-            tweets: {
-              background: '#ffffff',
-              color: '#444444',
-              links: '#607890'
+            features: {
+              scrollbar: false,
+              loop: false,
+              live: true,
+              hashtags: true,
+              timestamp: true,
+              avatars: false,
+              behavior: 'all'
             }
-          },
-          features: {
-            scrollbar: true,
-            loop: false,
-            live: true,
-            hashtags: true,
-            timestamp: true,
-            avatars: false,
-            behavior: 'all'
-          }
-        }).render().setUser('doctypehtml5').start();
-      },
+          }).render().setUser('doctypehtml5').start();
+        },
+      });
     });
-  });
   </script>
 
   {# Google Maps for venue #}
