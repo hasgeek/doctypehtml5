@@ -223,6 +223,8 @@ def approve(key):
                                   recipients = [p.email])
                     msg.body = render_template("approve_notice.md", p=p)
                     msg.html = markdown(msg.body)
+                    with app.open_resource("static/doctypehtml5.ics") as ics:
+                        msg.attach("doctypehtml5.ics", "text/calendar", ics.read())
                     mail.send(msg)
                 db.session.commit()
             else:
