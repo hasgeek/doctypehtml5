@@ -5,6 +5,7 @@
 Website server for doctypehtml5.in
 """
 
+from __future__ import with_statement
 from datetime import datetime
 from flask import Flask, abort, request, render_template, redirect, url_for
 from flaskext.sqlalchemy import SQLAlchemy
@@ -55,6 +56,24 @@ class Participant(db.Model):
     #: M = Maybe Attending
     #: N = Not Attending
     rsvp = db.Column(db.Unicode(1), default='A', nullable=False)
+
+
+#class User(db.Model):
+#    """
+#    User account. This is different from :class:`Participant` because the email
+#    address here has been verified and is unique. The email address in
+#    :class:`Participant` cannot be unique as that is unverified. Anyone may
+#    submit using any email address. Users are linked to their original
+#    submission as participants.
+#    """
+#    __tablename__ = 'user'
+#    id = db.Column(db.Integer, primary_key=True)
+#    #: Participant_id
+#    participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'), nullable=False, unique=True)
+#    #: Link to participant form submission
+#    participant = db.relation(Participant, primaryjoin=participant_id == Participant.id)
+#    #: Email id (repeated from participant.email, but unique here)
+#    email = db.Column(db.Unicode(80), nullable=False, unique=True)
 
 
 class RegisterForm(Form):

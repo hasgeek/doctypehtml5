@@ -3,7 +3,7 @@ CALSCALE:GREGORIAN
 VERSION:2.0
 X-WR-CALNAME:DocType HTML5
 METHOD:PUBLISH
-PRODID:-//Apple Inc.//iCal 4.0.3//EN
+PRODID:-//HasGeeks//NONSGML HandCoded//EN
 BEGIN:VTIMEZONE
 TZID:Asia/Calcutta
 BEGIN:STANDARD
@@ -31,6 +31,7 @@ LOCATION:Auditorium\, Indian Institute of Management\, Bannerghatta Road
  \, Bangalore - 560076
 DESCRIPTION:DocTypeHTML5 is a one day conference on HTML5\, CSS3 and rel
  ated technologies.
+ORGANIZER;CN=DocType HTML5:MAILTO:contact@doctypehtml5.in
 URL;VALUE=URI:http://www.doctypehtml5.in/
 STATUS:CONFIRMED
 SEQUENCE:5
@@ -40,7 +41,7 @@ CREATED:20100923T180555Z
 BEGIN:VALARM
 X-WR-ALARMUID:88B1B844-2D85-4A85-A630-70C0C67CFEA8
 TRIGGER:-PT1H
-DESCRIPTION:This is an event reminder
+DESCRIPTION:DocType HTML5 is today
 ACTION:DISPLAY
 END:VALARM
 END:VEVENT

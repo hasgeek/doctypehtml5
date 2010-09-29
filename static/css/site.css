@@ -83,8 +83,12 @@ p.attribution {
     min-height: 1em;
     padding: 0.5em;
     background-color: #e6e6e6;
+    border: 1px solid #aaa;
+    padding: 0.5em;
     border-radius: 0.25em;
-    border: 1px solid #e6e6e6;
+    box-shadow: 0px 2px 5px #ccc;
+    -webkit-box-shadow: 0px 2px 5px #ccc;
+    -moz-box-shadow: 0px 2px 5px #ccc;
 }
 
 .schedule .breakslot {
@@ -111,7 +115,6 @@ p.attribution {
     float: right;
     margin-left: 0.5em;
     font-weight: bold;
-    font-size: 85%;
 }
 
 /* Logo type */
@@ -207,9 +210,13 @@ h3 + p, h3 + ul, h3 + ol {
 }
 
 .regsuccess {
-    border: 1px solid red;
+    background-color: #e6e6e6;
+    border: 1px solid #aaa;
     padding: 0.5em;
-    border-radius: 0.25em;
+    border-radius: 0.5em;
+    box-shadow: 0px 2px 5px #ccc;
+    -webkit-box-shadow: 0px 2px 5px #ccc;
+    -moz-box-shadow: 0px 2px 5px #ccc;
 }
 
 .regsuccess:before {
