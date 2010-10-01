@@ -117,34 +117,50 @@
       // Activate jQuery UI tabs
       var mainTabs = $("#tabs").tabs({
         select: function(ev, ui) {
-          //location.href = ui.tab.href;
-          location.href = '#' + ui.tab.href.replace(/.*#(.*)/, '$1');
+          location.href = '#!/' + ui.tab.href.replace(/.*#(.*)/, '$1');
           return true;
         }
       });
+      // Helper function for subtabs
+      var subtabselect = function(ev, ui) {
+        location.href = '#!/' + ui.tab.href.replace(/.*#(.*)/, '$1').replace(/-/, '/');
+        return true;
+      }
       // Activate vertical tabs in gallery
       var galleryTabs = $("#gallery-tabs").tabs({
-        select: function(ev, ui) {
-          //location.href = '#gallery/' + ui.tab.href.replace(/.*#gallery-(.*)/, '$1');
-          //location.href = ui.tab.href;
-          location.href = '#' + ui.tab.href.replace(/.*#(.*)/, '$1');
-          return true;
-        }
+        select: subtabselect
       }).addClass('ui-tabs-vertical ui-helper-clearfix');
-      // Fix CSS for tab nav
+      // Keep track of tabs with sub-tabs
+      var subtabs = {
+        gallery: galleryTabs
+      };
+      // Fix CSS for tab display
       $(".ui-tabs").removeClass('ui-corner-all')
       $(".ui-tabs-nav").removeClass('ui-corner-all');
       $(".ui-tabs-panel").removeClass('ui-corner-bottom');
       $(".ui-tabs-vertical .ui-tabs-nav li").removeClass('ui-corner-top');
       // Activate Sammy for tab URL
       $.sammy(function() {
+        // Legacy URL. Keep this code for compatibility with old URLs
         this.get(/\#gallery-(.*)/, function(context) {
           mainTabs.tabs('select', '#gallery');
-          //galleryTabs.tabs('select', '#gallery-' + this.params['tab']);
           galleryTabs.tabs('select', this.params['splat']);
-          location.href = '#gallery-' + this.params['splat'];
+          location.href = '#!/gallery/' + this.params['splat'];
         });
+        // Legacy URL. Keep this code for compatibility with old URLs
         this.get('#:tab', function(context) {
+          mainTabs.tabs('select', '#' + this.params['tab']);
+          location.href = '#!/' + this.params['tab'];
+        });
+        // New #!/ Ajax URL
+        this.get('#!/:tab/:subtab', function(context) {
+          mainTabs.tabs('select', '#gallery');
+          if (this.params['tab'] in subtabs) {
+            subtabs[this.params['tab']].tabs('select', this.params['section']);
+          };
+        });
+        // New #!/ Ajax URL
+        this.get('#!/:tab', function(context) {
           mainTabs.tabs('select', '#' + this.params['tab']);
         });
       }).run();
