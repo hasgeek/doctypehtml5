@@ -1,0 +1,15 @@
+<h2>The Gallery</h2>
+<div id="gallery-tabs">
+  <ul>
+    {%- for title, key in gallery_sections %}
+      <li><a href="#gallery-{{ key }}">{{ title }}</a></li>
+    {%- endfor %}
+  </ul>
+  {%- for title, key in gallery_sections %}
+    <div id="gallery-{{ key }}">
+      <p class="ui-tabs-vertical-top">
+        Delicious links for <a href="http://delicious.com/tag/doctypehtml5-{{ key }}">doctypehtml5-{{ key }}</a>:
+      </p>
+    </div>
+  {%- endfor %}
+</div>

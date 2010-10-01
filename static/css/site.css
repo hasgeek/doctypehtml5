@@ -163,14 +163,14 @@ h2, h3, h4, h5, h6, p, ul, ol, dl, dt, dd, blockquote {
     margin-bottom: 0.5em;
 }
 
-a, a:hover, a:active, a:visited {
+a, a:hover, a:active, a:visited, .ui-widget-content a {
     color: #607890;
     text-decoration: none;
-    border-bottom: 1px dashed;
+    border-bottom: 1px solid #d3d3d3;
 }
 
 a:hover {
-    border-bottom: 1px solid;
+    border-bottom: 1px solid #607890;
 }
 
 /* Twitter widget */
@@ -305,11 +305,83 @@ form textarea {
     font-weight: bold;
 }
 
-.ui-corner-all {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+.ui-tabs-vertical .ui-tabs-nav {
+    float: left;
+    width: 20%;
+    padding: 0;
+}
+
+.ui-tabs-vertical .ui-widget-header {
+    border-bottom: 0;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li {
+    clear: left;
+    width: 100%;
+    border: 1px solid #d3d3d3 !important;
+    background: white url(images/ui-bg_glass_65_ffffff_1x400.png) repeat-x 50% 50%;
+    float: none;
+    position: static;
+    top: 0;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li.ui-state-hover {
+    border: 1px solid #aaa !important;
+    background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x 50% 50%;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li a {
+    display:block;
+}
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected {
+    margin-bottom: 1px;
+    padding-bottom: 0;
+    border: 1px solid #999 !important;
+    background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) repeat-x 50% 50%;
+}
+.ui-tabs-vertical .ui-tabs-panel {
+    float: left;
+    width: 75%;
+    margin-top: 0;
+    padding: 0 1em;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li a {
+    float: none;
+}
+
+.ui-tabs-vertical-top {
+    margin-top: 0;
+}
+
+/* Delicious-powered gallery */
+
+ul.delicious-list {
+    list-style-type: none;
+    margin-left: 0;
+}
+
+ul.delicious-list li {
+    display: block;
+    margin-top: 1em;
+}
+
+.delicious-title {
+    font-weight: bold;
+}
+
+.delicious-title img {
+    margin-right: 0.25em;
+}
+
+a.delicious-link, a.delicious-link:visited {
+    border-bottom: 0;
+    color: #444;
+}
+
+a.delicious-link:hover, a.delicious-link:active {
+    border-bottom: 1px solid #607890;
+    color: #607890;
 }
 
 /* Listing table */

@@ -7,7 +7,10 @@ Website server for doctypehtml5.in
 
 from __future__ import with_statement
 from datetime import datetime
+from uuid import uuid4
+from base64 import b64encode
 from flask import Flask, abort, request, render_template, redirect, url_for
+from werkzeug import generate_password_hash, check_password_hash
 from flaskext.sqlalchemy import SQLAlchemy
 from flaskext.mail import Mail, Message
 from flaskext.wtf import Form, TextField, TextAreaField
@@ -23,11 +26,75 @@ app = Flask(__name__)
 db = SQLAlchemy(app)
 mail = Mail(app)
 
+# ---------------------------------------------------------------------------
+# Static data
+
+USER_CATEGORIES = [
+    (0, u'Unclassified'),
+    (1, u'Student or Trainee'),
+    (2, u'Developer'),
+    (3, u'Designer'),
+    (4, u'Manager, Senior Developer/Designer'),
+    (5, u'CTO, CIO, CEO'),
+    (6, u'Entrepreneur'),
+    ]
+
+TSHIRT_SIZES = [
+    (0, u'Unknown'),
+    (1, u'XS'),
+    (2, u'S'),
+    (3, u'M'),
+    (4, u'L'),
+    (5, u'XL'),
+    (6, u'XXL'),
+    (7, u'XXXL'),
+    ]
+
+REFERRERS = [
+    (0, u'Unspecified'),
+    (1, u'Twitter'),
+    (2, u'Facebook'),
+    (3, u'LinkedIn'),
+    (4, u'Google/Bing Search'),
+    (5, u'Google Buzz'),
+    (6, u'Blog'),
+    (7, u'Email/IM from Friend'),
+    (8, u'Colleague at Work'),
+    (9, u'Other'),
+    ]
+
+GALLERY_SECTIONS = [
+    (u'Basics', u'basics'),
+    (u'Business', u'biz'),
+    (u'Accessibility', u'accessibility'),
+    (u'Typography', u'typography'),
+    (u'CSS3', u'css'),
+    (u'Audio', u'audio'),
+    (u'Video', u'video'),
+    (u'Canvas', u'canvas'),
+    (u'Vector Graphics', u'svg'),
+    (u'Geolocation', u'geolocation'),
+    (u'Mobile', u'mobile'),
+    (u'Toolkits', u'toolkit'),
+    (u'Showcase', u'showcase'),
+    ]
+
+# ---------------------------------------------------------------------------
+# Utility functions
+
+def newid():
+    """
+    Return a new random id that is exactly 22 characters long.
+    """
+    return b64encode(uuid4().bytes, altchars=',-').replace('=', '')
 
 # ---------------------------------------------------------------------------
 # Data models and forms
 
 class Participant(db.Model):
+    """
+    Participant data, as submitted from the registration form.
+    """
     __tablename__ = 'participant'
     id = db.Column(db.Integer, primary_key=True)
     #: User's full name
@@ -41,9 +108,13 @@ class Participant(db.Model):
     #: User's twitter id (optional)
     twitter = db.Column(db.Unicode(80), nullable=True)
     #: T-shirt size (XS, S, M, L, XL, XXL, XXXL)
-    #tshirtsize = db.Column(db.Unicode(1))
+    tshirtsize = db.Column(db.Integer, nullable=False, default=0)
+    #: How did the user hear about this event?
+    referrer = db.Column(db.Integer, nullable=False, default=0)
     #: User's reason for wanting to attend
     reason = db.Column(db.Text, nullable=False)
+    #: User category, defined by a reviewer
+    category = db.Column(db.Integer, nullable=False, default=0)
     #: Date the user registered
     regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     #: Submitter's IP address, for logging (45 chars to accommodate an IPv6 address)
@@ -58,22 +129,42 @@ class Participant(db.Model):
     rsvp = db.Column(db.Unicode(1), default='A', nullable=False)
 
 
-#class User(db.Model):
-#    """
-#    User account. This is different from :class:`Participant` because the email
-#    address here has been verified and is unique. The email address in
-#    :class:`Participant` cannot be unique as that is unverified. Anyone may
-#    submit using any email address. Users are linked to their original
-#    submission as participants.
-#    """
-#    __tablename__ = 'user'
-#    id = db.Column(db.Integer, primary_key=True)
-#    #: Participant_id
-#    participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'), nullable=False, unique=True)
-#    #: Link to participant form submission
-#    participant = db.relation(Participant, primaryjoin=participant_id == Participant.id)
-#    #: Email id (repeated from participant.email, but unique here)
-#    email = db.Column(db.Unicode(80), nullable=False, unique=True)
+class User(db.Model):
+    """
+    User account. This is different from :class:`Participant` because the email
+    address here has been verified and is unique. The email address in
+    :class:`Participant` cannot be unique as that is unverified. Anyone may
+    submit using any email address. Users are linked to their original
+    submission as participants.
+    """
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    #: Participant_id
+    participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'), nullable=False, unique=True)
+    #: Link to participant form submission
+    participant = db.relation(Participant, primaryjoin=participant_id == Participant.id)
+    #: Email id (repeated from participant.email, but unique here)
+    email = db.Column(db.Unicode(80), nullable=False, unique=True)
+    #: Private key, for first-time access without password
+    privatekey = db.Column(db.String(22), nullable=False, default=newid)
+    #: Public UID; not clear what this could be used for
+    uid = db.Column(db.String(22), nullable=False, default=newid)
+    #: Password hash
+    pw_hash = db.Column(db.String(80))
+
+    def _set_password(self, password):
+        if password is None:
+            self.pw_hash = None
+        else:
+            self.pw_hash = generate_password_hash(password)
+
+    password = property(fset=_set_password)
+
+    def check_password(self, password):
+        return check_password_hash(self.pw_hash, password)
+
+    def __repr__(self):
+        return '<User %s>' % (self.email)
 
 
 class RegisterForm(Form):
@@ -91,7 +182,7 @@ class RegisterForm(Form):
 @app.route('/', methods=['GET'])
 def index():
     regform = RegisterForm()
-    return render_template('index.html', regform=regform)
+    return render_template('index.html', regform=regform, gallery_sections=GALLERY_SECTIONS)
 
 @app.route('/favicon.ico')
 def favicon():
@@ -117,7 +208,6 @@ def submit():
             return render_template('regform.html',
                                    regform=form, ajax_re_register=True)
         else:
-            # TODO: This changes URL. It shouldn't.
             return render_template('index.html', regform=form)
 
 
