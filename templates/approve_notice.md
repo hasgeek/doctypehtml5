@@ -1,6 +1,6 @@
 Hello {{ p.fullname }}!
 
-Your registration for DocType HTML5 has been approved. We look forward
+Your registration for DocType HTML5 has been accepted. We look forward
 to seeing you at the event on October 9.
 
 The event will be hosted by [NSRCEL][] at the auditorium in the
