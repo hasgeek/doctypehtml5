@@ -117,13 +117,13 @@
       // Activate jQuery UI tabs
       var mainTabs = $("#tabs").tabs({
         select: function(ev, ui) {
-          location.href = '#!/' + ui.tab.href.replace(/.*#(.*)/, '$1');
+          location.href = '#/' + ui.tab.href.replace(/.*#(.*)/, '$1');
           return true;
         }
       });
       // Helper function for subtabs
       var subtabselect = function(ev, ui) {
-        location.href = '#!/' + ui.tab.href.replace(/.*#(.*)/, '$1').replace(/-/, '/');
+        location.href = '#/' + ui.tab.href.replace(/.*#(.*)/, '$1').replace(/-/, '/');
         return true;
       }
       // Activate vertical tabs in gallery
