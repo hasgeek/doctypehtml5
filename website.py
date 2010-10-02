@@ -75,6 +75,7 @@ GALLERY_SECTIONS = [
     (u'Vector Graphics', u'svg'),
     (u'Geolocation', u'geolocation'),
     (u'Mobile', u'mobile'),
+    (u'Websockets', u'websockets'),
     (u'Toolkits', u'toolkit'),
     (u'Showcase', u'showcase'),
     ]
