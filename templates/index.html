@@ -145,22 +145,22 @@
         this.get(/\#gallery-(.*)/, function(context) {
           mainTabs.tabs('select', '#gallery');
           galleryTabs.tabs('select', this.params['splat']);
-          location.href = '#!/gallery/' + this.params['splat'];
+          location.href = '#/gallery/' + this.params['splat'];
         });
         // Legacy URL. Keep this code for compatibility with old URLs
         this.get('#:tab', function(context) {
           mainTabs.tabs('select', '#' + this.params['tab']);
-          location.href = '#!/' + this.params['tab'];
+          location.href = '#/' + this.params['tab'];
         });
-        // New #!/ Ajax URL
-        this.get('#!/:tab/:subtab', function(context) {
+        // New #/ Ajax URL
+        this.get('#/:tab/:subtab', function(context) {
           mainTabs.tabs('select', '#gallery');
           if (this.params['tab'] in subtabs) {
             subtabs[this.params['tab']].tabs('select', this.params['subtab']);
           };
         });
-        // New #!/ Ajax URL
-        this.get('#!/:tab', function(context) {
+        // New #/ Ajax URL
+        this.get('#/:tab', function(context) {
           mainTabs.tabs('select', '#' + this.params['tab']);
         });
       }).run();

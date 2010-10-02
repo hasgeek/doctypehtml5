@@ -188,6 +188,10 @@ def index():
 def favicon():
     return redirect(url_for('static', filename='favicon.ico'), code=301)
 
+@app.route('/robots.txt')
+def robots():
+    # Disable support for indexing fragments, since there's no backing code
+    return "Disallow: /*_escaped_fragment_\n"
 
 # ---------------------------------------------------------------------------
 # Form submission
