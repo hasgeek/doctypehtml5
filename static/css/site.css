@@ -84,40 +84,43 @@ p.attribution {
     min-height: 1em;
     padding: 0.5em;
     background-color: #e6e6e6;
-    border: 1px solid #aaa;
+/*    border: 1px solid #aaa; */
     padding: 0.5em;
     -webkit-border-radius: 0.25em;
     -moz-border-radius: 0.25em;
     border-radius: 0.25em;
-    -webkit-box-shadow: 0px 2px 5px #ccc;
+/*    -webkit-box-shadow: 0px 2px 5px #ccc;
     -moz-box-shadow: 0px 2px 5px #ccc;
-    box-shadow: 0px 2px 5px #ccc;
+    box-shadow: 0px 2px 5px #ccc; */
 }
 
 .schedule .breakslot {
-    background-color: #ccc;
+/*    background-color: #ccc; */
 }
 
 .schedule .dayslot .icon {
     float: left;
-    min-width: 48px;
+    min-width: 32px;
+    height: 24px;
 }
 
 .schedule .dayslot .title {
     float: left;
     font-weight: bold;
     margin-right: 0.5em;
+    padding-top: 1px;
 }
 
 .schedule .dayslot .speaker {
     float: left;
-    font-style: italic;
+    padding-top: 1px;
 }
 
 .schedule .dayslot .time {
     float: right;
     margin-left: 0.5em;
     font-weight: bold;
+    padding-top: 1px;
 }
 
 /* Logo type */
@@ -212,20 +215,25 @@ h3 + p, h3 + ul, h3 + ol {
     margin-top: 0;
 }
 
-.regsuccess {
+.regsuccess, .flash {
     background-color: #e6e6e6;
     border: 1px solid #aaa;
     padding: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -moz-border-radius: 0.5em;
-    border-radius: 0.5em;
+    -webkit-border-radius: 0.25em;
+    -moz-border-radius: 0.25em;
+    border-radius: 0.25em;
     -webkit-box-shadow: 0px 2px 5px #ccc;
     -moz-box-shadow: 0px 2px 5px #ccc;
     box-shadow: 0px 2px 5px #ccc;
+    margin: 1em 0;
 }
 
-.regsuccess:before {
-    content: "\2713 "
+.regsuccess:before, .flash-info:before {
+    content: "\2713\00a0";
+}
+
+.flash-error:before {
+    content: "\2639\00a0";
 }
 
 /* Forms */

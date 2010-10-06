@@ -1,10 +1,11 @@
 {% macro renderform(form, formid, action='', submitlabel='Submit', method='POST') -%}
 <form id="{{ formid }}" action="{{ action }}" method="{{ method }}">
+  <input type="hidden" name="_charset_"/>
+  <input type="hidden" name="form.id" value="{{ formid }}"/>
   <dl class="form">
-    <input type="hidden" name="_charset_"/>
-    <input type="hidden" name="form.id" value="{{ formid }}"/>
     {% for field in form %}
       {% if field.widget.input_type == 'hidden' %}
+        {# FIXME: DT or DD tag required. INPUT cannot directly be within a DL #}
         {{ field()|safe }}
       {% else %}
         {% if field.widget.input_type == 'checkbox' %}

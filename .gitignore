@@ -2,3 +2,4 @@
 *.pyc
 settings.py
 test.db
+*.wpr

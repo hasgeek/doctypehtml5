@@ -42,7 +42,7 @@
           <td rowspan="2" class="wide">
             {%- if p.approved -%}
               {% if config['DEBUG'] %}
-                <form id="approve{{ i }}" action="{{ url_for('approve', key=key) }}" method="POST">
+                <form id="approve{{ i }}" action="{{ url_for('admin_approve', key=key) }}" method="POST">
                   Approved
                   <input type="hidden" name="id" value="{{ p.id }}"/>
                   <input type="submit" name="action.undo" value="Undo"/>
@@ -51,7 +51,7 @@
                 Approved
               {% endif %}
             {%- else -%}
-            <form id="approve{{ i }}" action="{{ url_for('approve', key=key) }}" method="POST">
+            <form id="approve{{ i }}" action="{{ url_for('admin_approve', key=key) }}" method="POST">
               <input type="hidden" name="id" value="{{ p.id }}"/>
               <input type="submit" name="action.approve" value="Approve"/>
             </form>

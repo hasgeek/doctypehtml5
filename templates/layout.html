@@ -51,6 +51,9 @@
 <!--[if !IE]><!--> <body>         <!--<![endif]-->
   <div id="container">
     <header>
+      {%- for category, msg in get_flashed_messages(with_categories=true) %}
+        <div class="flash flash-{{ category }}">{{ msg }}</div>
+      {%- endfor %}
       {% block header %}{% endblock %}
     </header>
     <div id="main">

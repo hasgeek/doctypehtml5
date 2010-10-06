@@ -31,7 +31,6 @@
     <ul>
       <li><a href="#overview">Overview</a></li>
       <li><a href="#agenda">Agenda</a></li>
-      <li><a href="#registration">Registration</a></li>
       <li><a href="#schedule">Schedule</a></li>
       <li><a href="#venue">Venue</a></li>
       <li><a href="#gallery">Gallery</a></li>
@@ -43,9 +42,6 @@
     </div>
     <div id="agenda">
       {% include 'agenda.html' %}
-    </div>
-    <div id="registration">
-      {% include 'registration.html' %}
     </div>
     <div id="schedule">
       {% include 'schedule.html' %}
@@ -75,20 +71,6 @@
         <img src="{{ url_for('static', filename='img/logos/microsoft.jpg') }}" width="140" height="70"
             alt="Microsoft"/>
       </a>
-    </div>
-    <div id="sponsor-gold" class="tile bubbleInfo">
-      <span class="title">Gold Sponsor</span><br/>
-      {% block sponsorshipopen %}
-        <img class="trigger" src="{{ url_for('static', filename='img/logos/blank.png') }}" width="90" height="70" alt="Available"/>
-        <div class="popup">
-          Sponsor position available.
-          <a href="mailto:%63%6f%6e%74%61%63%74%40%64%6f%63%74%79%70%65%68%74%6d%6c%35%2e%69%6e">Write to us</a>.        
-        </div>
-      {% endblock %}
-    </div>
-    <div id="sponsor-silver" class="tile bubbleInfo">
-      <span class="title">Silver Sponsor</span><br/>
-      {{ self.sponsorshipopen() }}
     </div>
     <div id="sponsor-hosts" class="tile">
       <span class="title">Event Hosts</span><br/>
