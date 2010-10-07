@@ -394,6 +394,17 @@ def admin_list(key):
     else:
         abort(401)
 
+@app.route('/admin/stats/<key>')
+def admin_stats(key):
+    if key and key in app.config['ACCESSKEY_LIST']:
+        rsvp_yes = Participant.query.filter_by(approved=True, rsvp='Y').count()
+        rsvp_no = Participant.query.filter_by(approved=True, rsvp='N').count()
+        rsvp_maybe = Participant.query.filter_by(approved=True, rsvp='M').count()
+        return render_template('stats.html', yes=rsvp_yes, no=rsvp_no, maybe=rsvp_maybe,
+                               title=u'RSVP Statistics')
+    else:
+        abort(401)
+
 
 @app.route('/admin/data/<key>')
 def admin_data(key, skipreason=False):

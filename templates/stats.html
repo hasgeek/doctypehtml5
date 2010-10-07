@@ -1,0 +1,30 @@
+{# Render a data table. Nothing fancy #}
+{% extends "layout.html" %}
+{% block title %}{{ title|e }}{% endblock %}
+
+{% block header %}
+  <h1>{{ title|e }}</h1>
+{% endblock %}
+
+{% block pageheaders %}
+  <style type="text/css">
+    #container {
+      padding-top: 0;
+    }
+    #container, footer {
+      max-width: 100%;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <p>
+    <img src="http://chart.apis.google.com/chart?cht=p3&amp;chd=t:{{yes}},{{no}},{{maybe}}&amp;chs=330x150&amp;chl=Yes|No|Maybe" alt="RSVP Chart"/>
+  </p>
+{% endblock %}
+
+{% block footer %}
+  <p>
+    This is a restricted page. Do not share this URL.
+  </p>
+{% endblock %}
