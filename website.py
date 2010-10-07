@@ -388,7 +388,7 @@ def admin_list(key):
         headers = [('no', u'Sl No'), ('name', u'Name'), ('company', u'Company'),
                    ('jobtitle', u'Job Title')]
         data = ({'no': i+1, 'name': p.fullname, 'company': p.company,
-                 'jobtitle': p.jobtitle} for i, p in enumerate(Participant.query.all()))
+                 'jobtitle': p.jobtitle} for i, p in enumerate(Participant.query.order_by('fullname').all()))
         return render_template('datatable.html', headers=headers, data=data,
                                title=u'List of participants')
     else:
