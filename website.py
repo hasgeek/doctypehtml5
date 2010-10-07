@@ -400,7 +400,9 @@ def admin_stats(key):
         rsvp_yes = Participant.query.filter_by(approved=True, rsvp='Y').count()
         rsvp_no = Participant.query.filter_by(approved=True, rsvp='N').count()
         rsvp_maybe = Participant.query.filter_by(approved=True, rsvp='M').count()
-        return render_template('stats.html', yes=rsvp_yes, no=rsvp_no, maybe=rsvp_maybe,
+        rsvp_awaiting = Participant.query.filter_by(approved=True, rsvp='A').count()
+        return render_template('stats.html', yes=rsvp_yes, no=rsvp_no,
+                               maybe=rsvp_maybe, awaiting=rsvp_awaiting,
                                title=u'RSVP Statistics')
     else:
         abort(401)
