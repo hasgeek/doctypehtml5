@@ -151,6 +151,12 @@ class Participant(db.Model):
     #: M = Maybe Attending
     #: N = Not Attending
     rsvp = db.Column(db.Unicode(1), default='A', nullable=False)
+    #: Did the participant attend the event?
+    attended = db.Column(db.Boolean, default=False, nullable=False)
+    #: Datetime the participant showed up
+    attenddate = db.Column(db.DateTime, nullable=True)
+    #: Did the participant agree to subscribe to the newsletter?
+    subscribe = db.Column(db.Boolean, default=False, nullable=False)
 
 
 class User(db.Model):
@@ -542,6 +548,68 @@ def admin_approve(key):
             return status
         else:
             return redirect(url_for('admin_approveform', key=key), code=303)
+    else:
+        abort(401)
+
+
+@app.route('/admin/venue/<key>', methods=['GET'])
+def admin_venueform(key):
+    if key and key in app.config['ACCESSKEY_APPROVE']:
+        if 'email' in request.args:
+            return admin_venue(key, 'venueregemail', request.args['email'])
+        else:
+            return render_template('venuereg.html', key=key)
+    else:
+        abort(401)
+
+
+@app.route('/admin/venue/<key>', methods=['POST'])
+def admin_venue(key, formid=None, email=None):
+    if key and key in app.config['ACCESSKEY_APPROVE']:
+        formid = request.form.get('form.id', formid)
+        if formid == 'venueregemail':
+            email = request.form.get('email', email)
+            if email:
+                p = Participant.query.filter_by(email=email).first()
+                if p is not None:
+                    if p.attended: # Already signed in
+                        flash("You have already signed in. Next person please.")
+                        return redirect(url_for('admin_venue', key=key), code=303)
+                    else:
+                        return render_template('venueregdetails.html', key=key, p=p)
+            # Unknown email address. Ask for new registration
+            regform = RegisterForm()
+            regform.email.data = email
+            return render_template('venueregnew.html', key=key, regform=regform)
+        elif formid == 'venueregconfirm':
+            id = request.form['id']
+            subscribe = request.form.get('subscribe')
+            p = Participant.query.get(id)
+            if subscribe:
+                p.subscribe = True
+            else:
+                p.subscribe = False
+            p.attended = True
+            p.attenddate = datetime.utcnow()
+            db.session.commit()
+            flash("You have been signed in. Next person please.", 'info')
+            return redirect(url_for('admin_venueform', key=key), code=303)
+        elif formid == 'venueregform':
+            # Validate form and register
+            regform = RegisterForm()
+            if regform.validate_on_submit():
+                participant = Participant()
+                regform.populate_obj(participant)
+                participant.ipaddr = request.environ['REMOTE_ADDR']
+                db.session.add(participant)
+                db.session.commit()
+                return render_template('venueregsuccess.html', key=key, p=participant)
+            else:
+                return render_template('venueregform.html', key=key,
+                                       regform=regform, ajax_re_register=True)
+        else:
+            flash("Unknown form submission", 'error')
+            return redirect(url_for('admin_venueform', key=key), code=303)
     else:
         abort(401)
 

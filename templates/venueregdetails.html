@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}DocType HTML5 At Venue Registration{% endblock %}
+
+{% block pageheaders %}
+  <style type="text/css">
+    #container {
+      text-align: center;
+    }
+  </style>
+{% endblock %}
+
+{% block header %}
+  <h1><span class="brkt">&lt;</span><span class="bang">!</span>DocType HTML<sup>5</sup><span class="domain">.in</span><span class="brkt">&gt;</span></h1>
+{% endblock %}
+
+{% block content %}
+  <form action="{{ url_for('admin_venue', key=key) }}" method="POST">
+    <input type="hidden" name="_charset_"/>
+    <input type="hidden" name="form.id" value="venueregconfirm"/>
+    <input type="hidden" name="id" value="{{ p.id }}"/>
+    <p>
+      Is this you? <strong>{{ p.fullname }}</strong>, {{ p.jobtitle }}, {{ p.company }}
+    </p>
+    <p style="font-size: smaller;">
+      <input type="checkbox" id="subscribe" name="subscribe" value="1" checked=""/>
+      <label for="subscribe">Keep me informed of future events</label>
+    </p>
+    <p>
+      <input type="submit" value="That’s Me!"/>
+    </p>
+    <p style="font-size: smaller;"><a href="{{ url_for('admin_venueform', key=key) }}">Not You?</a></p>
+  </form>
+{% endblock %}
+
+{% block footer %}
+  <p>
+    DocType HTML5 is a one day conference on HTML5, CSS3 and related technologies.
+  </p>
+{% endblock %}

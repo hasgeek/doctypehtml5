@@ -1,0 +1,8 @@
+<div class="regsuccess">
+  You have been registered. Just one more step to go...
+</div>
+<script type="text/javascript">
+  $(function() {
+    location.href = "{{ url_for('admin_venue', key=key, email=p.email) }}";
+  });
+</script>
