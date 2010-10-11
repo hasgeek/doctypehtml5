@@ -392,9 +392,14 @@ def admin_reasons(key):
 def admin_list(key):
     if key and key in app.config['ACCESSKEY_LIST']:
         headers = [('no', u'Sl No'), ('name', u'Name'), ('company', u'Company'),
-                   ('jobtitle', u'Job Title')]
+                   ('jobtitle', u'Job Title'), ('twitter', 'Twitter'),
+                   ('rsvp', 'RSVP'), ('attended', 'Attended')]
         data = ({'no': i+1, 'name': p.fullname, 'company': p.company,
-                 'jobtitle': p.jobtitle} for i, p in enumerate(Participant.query.order_by('fullname').all()))
+                 'jobtitle': p.jobtitle,
+                 'twitter': p.twitter,
+                 'rsvp': {'Y': 'Yes', 'N': 'No', 'M': 'Maybe', 'A': 'Awaiting'}[p.rsvp],
+                 'attended': ['No', 'Yes'][p.attended]
+                 } for i, p in enumerate(Participant.query.order_by('fullname').all()))
         return render_template('datatable.html', headers=headers, data=data,
                                title=u'List of participants')
     else:
