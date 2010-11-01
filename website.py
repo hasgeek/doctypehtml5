@@ -15,7 +15,7 @@ from werkzeug import generate_password_hash, check_password_hash
 from flaskext.sqlalchemy import SQLAlchemy
 from flaskext.mail import Mail, Message
 from flaskext.wtf import Form, TextField, TextAreaField, PasswordField
-from flaskext.wtf import Required, Email, ValidationError
+from flaskext.wtf import SelectField, Required, Email, ValidationError
 from pytz import utc, timezone
 from markdown import markdown
 try:
@@ -31,37 +31,44 @@ mail = Mail(app)
 # Static data
 
 USER_CATEGORIES = [
-    (0, u'Unclassified'),
-    (1, u'Student or Trainee'),
-    (2, u'Developer'),
-    (3, u'Designer'),
-    (4, u'Manager, Senior Developer/Designer'),
-    (5, u'CTO, CIO, CEO'),
-    (6, u'Entrepreneur'),
+    ('0', u'Unclassified'),
+    ('1', u'Student or Trainee'),
+    ('2', u'Developer'),
+    ('3', u'Designer'),
+    ('4', u'Manager, Senior Developer/Designer'),
+    ('5', u'CTO, CIO, CEO'),
+    ('6', u'Entrepreneur'),
+    ]
+
+USER_CITIES = [
+    ('', ''),
+    ('bangalore', 'Bangalore - October 9, 2010 (over!)'),
+    ('chennai', 'Chennai - November 20, 2010'),
+    ('pune', 'Pune - December 4, 2010'),
     ]
 
 TSHIRT_SIZES = [
-    (0, u'Unknown'),
-    (1, u'XS'),
-    (2, u'S'),
-    (3, u'M'),
-    (4, u'L'),
-    (5, u'XL'),
-    (6, u'XXL'),
-    (7, u'XXXL'),
+    ('',  u''),
+    ('1', u'XS'),
+    ('2', u'S'),
+    ('3', u'M'),
+    ('4', u'L'),
+    ('5', u'XL'),
+    ('6', u'XXL'),
+    ('7', u'XXXL'),
     ]
 
 REFERRERS = [
-    (0, u'Unspecified'),
-    (1, u'Twitter'),
-    (2, u'Facebook'),
-    (3, u'LinkedIn'),
-    (4, u'Google/Bing Search'),
-    (5, u'Google Buzz'),
-    (6, u'Blog'),
-    (7, u'Email/IM from Friend'),
-    (8, u'Colleague at Work'),
-    (9, u'Other'),
+    ('',  u''),
+    ('1', u'Twitter'),
+    ('2', u'Facebook'),
+    ('3', u'LinkedIn'),
+    ('4', u'Google/Bing Search'),
+    ('5', u'Google Buzz'),
+    ('6', u'Blog'),
+    ('7', u'Email/IM from Friend'),
+    ('8', u'Colleague at Work'),
+    ('9', u'Other'),
     ]
 
 GALLERY_SECTIONS = [
@@ -125,6 +132,8 @@ class Participant(db.Model):
     fullname = db.Column(db.Unicode(80), nullable=False)
     #: User's email address
     email = db.Column(db.Unicode(80), nullable=False)
+    #: User's city, for the edition they'd like to attend
+    city = db.Column(db.Unicode(80), nullable=False)
     #: User's company name
     company = db.Column(db.Unicode(80), nullable=False)
     #: User's job title
@@ -139,6 +148,8 @@ class Participant(db.Model):
     reason = db.Column(db.Text, nullable=False)
     #: User category, defined by a reviewer
     category = db.Column(db.Integer, nullable=False, default=0)
+    #: User agent with which the user registered
+    useragent = db.Column(db.Unicode(250), nullable=True)
     #: Date the user registered
     regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     #: Submitter's IP address, for logging (45 chars to accommodate an IPv6 address)
@@ -206,10 +217,17 @@ class User(db.Model):
 class RegisterForm(Form):
     fullname = TextField('Full name', validators=[Required()])
     email = TextField('Email address', validators=[Required(), Email()])
+    city = SelectField('City', validators=[Required()], choices=USER_CITIES)
     company = TextField('Company name', validators=[Required()])
     jobtitle = TextField('Job title', validators=[Required()])
     twitter = TextField('Twitter id (optional)')
+    tshirtsize = SelectField('T-shirt size', validators=[Required()], choices=TSHIRT_SIZES)
+    referrer = SelectField('How did you hear about this event?', validators=[Required()], choices=REFERRERS)
     reason = TextAreaField('Your reasons for attending', validators=[Required()])
+
+    def validate_city(self, field):
+        if field.data == u'bangalore':
+            raise ValidationError, "Registrations are closed for this city"
 
 
 class LoginForm(Form):
@@ -342,6 +360,7 @@ def submit_register():
         participant = Participant()
         form.populate_obj(participant)
         participant.ipaddr = request.environ['REMOTE_ADDR']
+        participant.useragent = request.user_agent.string
         db.session.add(participant)
         db.session.commit()
         return render_template('regsuccess.html')

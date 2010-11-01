@@ -21,8 +21,9 @@ ACCESSKEY_APPROVE = ['test']
 MAILCHIMP_API_KEY = ''
 #: MailChimp list id to put participants in.
 #: The list id can be found in the list's settings
-#: or via the API
-MAILCHIMP_LIST_ID = ''
+#: or via the API. Example usage:
+#: {'bangalore: 'xxxx', 'chennai': 'xxxx'}
+MAILCHIMP_LIST_IDS = {}
 #: Mail settings
 #: MAIL_FAIL_SILENTLY : default True
 #: MAIL_SERVER : default 'localhost'
