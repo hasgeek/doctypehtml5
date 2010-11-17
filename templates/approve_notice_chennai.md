@@ -14,13 +14,13 @@ first edition, have decided to support us as the platinum sponsor once again.
 The new [Internet Explorer 9 beta][IE9] brings HTML5 support to the world's
 most widely deployed browser. We think you should check it out because this
 is the browser most of your users will have available by default. With IE9,
-every one of the major browsers is now HTML5-ready, so there's little reason
-to hold off on using it. This event will help you get started.
+every major browser is now HTML5-ready, so there's little reason not to use it.
+This event will help you get started.
 
 ### Staying updated ###
 
 DocType HTML5 is a **free** event, but all participants must be registered
-via the website. If you'd like to bring a friend along, tell them to
+via the website. If you'd like to bring a friend along, please ask them to
 [sign up][].
 
 This is an event put together by volunteers as the foundation for a community
@@ -32,8 +32,8 @@ enthusiasts. You can also help shape the event in several ways:
 * Fork the source code for the website on [GitHub][]
 * Reply to this email with your ideas
 
-We greatly appreciate the attention you bring to the event and the community by
-discussing them. To help us make the most of it,
+We greatly appreciate the attention you bring to the event by spreading the
+word. To help us make the most of it,
 
 * [Recommend the event][rec] to your followers on Twitter
 * Use the Twitter hashtag ``#doctypehtml5``
@@ -44,11 +44,11 @@ when registering. Your continued feedback will help refine it. You can stay
 updated on progress by following us on [Twitter][]. We will send you an email
 update a day prior to the event.
 
-Once again, thanks for registering, and see you on October 9!
+Once again, thanks for registering, and see you on November 27!
 
 Sincerely,
 
-Kiran Jonnalagadda  
+Kiran Jonnalagadda
 On behalf of the planning team
 
 
