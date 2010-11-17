@@ -3,3 +3,6 @@
 settings.py
 test.db
 *.wpr
+.project
+.pydevproject
+.settings

@@ -45,6 +45,7 @@ USER_CITIES = [
     ('bangalore', 'Bangalore - October 9, 2010 (over!)'),
     ('chennai', 'Chennai - November 27, 2010'),
     ('pune', 'Pune - December 4, 2010'),
+    ('hyderabad', 'Hyderabad - January 22, 2011'),
     ]
 
 TSHIRT_SIZES = [
@@ -59,16 +60,17 @@ TSHIRT_SIZES = [
     ]
 
 REFERRERS = [
-    ('',  u''),
-    ('1', u'Twitter'),
-    ('2', u'Facebook'),
-    ('3', u'LinkedIn'),
-    ('4', u'Google/Bing Search'),
-    ('5', u'Google Buzz'),
-    ('6', u'Blog'),
-    ('7', u'Email/IM from Friend'),
-    ('8', u'Colleague at Work'),
-    ('9', u'Other'),
+    ('',   u''),
+    ('1',  u'Twitter'),
+    ('2',  u'Facebook'),
+    ('3',  u'LinkedIn'),
+    ('10', u'Discussion Group or List'),
+    ('4',  u'Google/Bing Search'),
+    ('5',  u'Google Buzz'),
+    ('6',  u'Blog'),
+    ('7',  u'Email/IM from Friend'),
+    ('8',  u'Colleague at Work'),
+    ('9',  u'Other'),
     ]
 
 GALLERY_SECTIONS = [
@@ -132,8 +134,8 @@ class Participant(db.Model):
     fullname = db.Column(db.Unicode(80), nullable=False)
     #: User's email address
     email = db.Column(db.Unicode(80), nullable=False)
-    #: User's city, for the edition they'd like to attend
-    city = db.Column(db.Unicode(80), nullable=False)
+    #: Edition of the event they'd like to attend
+    edition = db.Column(db.Unicode(80), nullable=False)
     #: User's company name
     company = db.Column(db.Unicode(80), nullable=False)
     #: User's job title
@@ -168,6 +170,10 @@ class Participant(db.Model):
     attenddate = db.Column(db.DateTime, nullable=True)
     #: Did the participant agree to subscribe to the newsletter?
     subscribe = db.Column(db.Boolean, default=False, nullable=False)
+    #: User_id
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, unique=False)
+    #: Link to user account
+    user = db.relation('User', backref='participants')
 
 
 class User(db.Model):
@@ -175,15 +181,12 @@ class User(db.Model):
     User account. This is different from :class:`Participant` because the email
     address here has been verified and is unique. The email address in
     :class:`Participant` cannot be unique as that is unverified. Anyone may
-    submit using any email address. Users are linked to their original
-    submission as participants.
+    submit using any email address. Participant objects link to user objects
     """
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    #: Participant_id
-    participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'), nullable=False, unique=True)
-    #: Link to participant form submission
-    participant = db.relation(Participant, primaryjoin=participant_id == Participant.id)
+    #: User's name
+    fullname = db.Column(db.Unicode(80), nullable=False)
     #: Email id (repeated from participant.email, but unique here)
     email = db.Column(db.Unicode(80), nullable=False, unique=True)
     #: Private key, for first-time access without password
@@ -217,17 +220,21 @@ class User(db.Model):
 class RegisterForm(Form):
     fullname = TextField('Full name', validators=[Required()])
     email = TextField('Email address', validators=[Required(), Email()])
-    city = SelectField('City', validators=[Required()], choices=USER_CITIES)
-    company = TextField('Company name', validators=[Required()])
+    edition = SelectField('Edition', validators=[Required()], choices=USER_CITIES)
+    company = TextField('Company name (or school/college)', validators=[Required()])
     jobtitle = TextField('Job title', validators=[Required()])
     twitter = TextField('Twitter id (optional)')
     tshirtsize = SelectField('T-shirt size', validators=[Required()], choices=TSHIRT_SIZES)
     referrer = SelectField('How did you hear about this event?', validators=[Required()], choices=REFERRERS)
     reason = TextAreaField('Your reasons for attending', validators=[Required()])
 
-    def validate_city(self, field):
+    def validate_edition(self, field):
         if field.data == u'bangalore':
             raise ValidationError, "Registrations are closed for this city"
+
+
+class AccessKeyForm(Form):
+    key = TextField('Access Key', validators=[Required()])
 
 
 class LoginForm(Form):
@@ -396,119 +403,130 @@ def submit_login():
 # ---------------------------------------------------------------------------
 # Admin backend
 
-@app.route('/admin/reasons/<key>')
-def admin_reasons(key):
-    if key and key in app.config['ACCESSKEY_REASONS']:
-        headers = [('no', u'Sl No'), ('reason', u'Reason')] # List of (key, label)
-        data = ({'no': i+1, 'reason': p.reason} for i, p in enumerate(Participant.query.all()))
-        return render_template('datatable.html', headers=headers, data=data,
-                               title=u'Reasons for attending')
-    else:
-        abort(401)
+def adminkey(keyname):
+    def decorator(f):
+        def inner(edition):
+            form = AccessKeyForm()
+            keylist = app.config[keyname]
+            # check for key and call f or return form
+            if 'key' in request.values:
+                if request.values.get('key') in keylist:
+                    session[keyname] = request.values['key']
+                    return redirect(request.base_url, code=303) # FIXME: Redirect to self URL
+                else:
+                    flash("Invalid access key", 'error')
+                    return render_template('accesskey.html', keyform=form)
+            elif keyname in session and session[keyname] in keylist:
+                return f(edition)
+            else:
+                return render_template('accesskey.html', keyform=form)
+        inner.__name__ = f.__name__
+        return inner
+    return decorator
 
 
-@app.route('/admin/list/<key>')
-def admin_list(key):
-    if key and key in app.config['ACCESSKEY_LIST']:
-        headers = [('no', u'Sl No'), ('name', u'Name'), ('company', u'Company'),
-                   ('jobtitle', u'Job Title'), ('twitter', 'Twitter'),
-                   ('rsvp', 'RSVP'), ('attended', 'Attended')]
-        data = ({'no': i+1, 'name': p.fullname, 'company': p.company,
-                 'jobtitle': p.jobtitle,
-                 'twitter': p.twitter,
-                 'rsvp': {'Y': 'Yes', 'N': 'No', 'M': 'Maybe', 'A': 'Awaiting'}[p.rsvp],
-                 'attended': ['No', 'Yes'][p.attended]
-                 } for i, p in enumerate(Participant.query.order_by('fullname').all()))
-        return render_template('datatable.html', headers=headers, data=data,
-                               title=u'List of participants')
-    else:
-        abort(401)
+@app.route('/admin/reasons/<edition>', methods=['GET', 'POST'])
+@adminkey('ACCESSKEY_REASONS')
+def admin_reasons(edition):
+    headers = [('no', u'Sl No'), ('reason', u'Reason')] # List of (key, label)
+    data = ({'no': i+1, 'reason': p.reason} for i, p in
+            enumerate(Participant.query.filter_by(edition=edition)))
+    return render_template('datatable.html', headers=headers, data=data,
+                           title=u'Reasons for attending')
 
-@app.route('/admin/stats/<key>')
+
+@app.route('/admin/list/<edition>', methods=['GET', 'POST'])
+@adminkey('ACCESSKEY_LIST')
+def admin_list(edition):
+    headers = [('no', u'Sl No'), ('name', u'Name'), ('company', u'Company'),
+               ('jobtitle', u'Job Title'), ('twitter', 'Twitter'),
+               ('rsvp', 'RSVP'), ('attended', 'Attended')]
+    data = ({'no': i+1, 'name': p.fullname, 'company': p.company,
+             'jobtitle': p.jobtitle,
+             'twitter': p.twitter,
+             'rsvp': {'Y': 'Yes', 'N': 'No', 'M': 'Maybe', 'A': 'Awaiting'}[p.rsvp],
+             'attended': ['No', 'Yes'][p.attended]
+             } for i, p in enumerate(Participant.query.order_by('fullname').filter_by(edition=edition)))
+    return render_template('datatable.html', headers=headers, data=data,
+                           title=u'List of participants')
+
+@app.route('/admin/stats/<edition>', methods=['GET', 'POST'])
+@adminkey('ACCESSKEY_LIST')
 def admin_stats(key):
-    if key and key in app.config['ACCESSKEY_LIST']:
-        rsvp_yes = Participant.query.filter_by(approved=True, rsvp='Y').count()
-        rsvp_no = Participant.query.filter_by(approved=True, rsvp='N').count()
-        rsvp_maybe = Participant.query.filter_by(approved=True, rsvp='M').count()
-        rsvp_awaiting = Participant.query.filter_by(approved=True, rsvp='A').count()
-        return render_template('stats.html', yes=rsvp_yes, no=rsvp_no,
-                               maybe=rsvp_maybe, awaiting=rsvp_awaiting,
-                               title=u'RSVP Statistics')
-    else:
-        abort(401)
+    rsvp_yes = Participant.query.filter_by(approved=True, rsvp='Y').count()
+    rsvp_no = Participant.query.filter_by(approved=True, rsvp='N').count()
+    rsvp_maybe = Participant.query.filter_by(approved=True, rsvp='M').count()
+    rsvp_awaiting = Participant.query.filter_by(approved=True, rsvp='A').count()
+    return render_template('stats.html', yes=rsvp_yes, no=rsvp_no,
+                           maybe=rsvp_maybe, awaiting=rsvp_awaiting,
+                           title=u'RSVP Statistics')
 
 
-@app.route('/admin/data/<key>')
-def admin_data(key, skipreason=False):
-    if key and key in app.config['ACCESSKEY_DATA']:
+@app.route('/admin/data/<edition>', methods=['GET', 'POST'])
+@adminkey('ACCESSKEY_DATA')
+def admin_data(edition):
+    d_tshirt = dict(TSHIRT_SIZES)
+    d_referrer = dict(REFERRERS)
+    d_category = dict(USER_CATEGORIES)
+    tz = timezone(app.config['TIMEZONE'])
+    headers = [('no',       u'Sl No'),
+               ('regdate',  u'Date'),
+               ('name',     u'Name'),
+               ('email',    u'Email'),
+               ('company',  u'Company'),
+               ('jobtitle', u'Job Title'),
+               ('twitter',  u'Twitter'),
+               ('tshirt',   u'T-shirt Size'),
+               ('referrer', u'Referrer'),
+               ('category', u'Category'),
+               ('ipaddr',   u'IP Address'),
+               ('approved', u'Approved'),
+               ('RSVP',     u'RSVP'),
+               ('agent',    u'User Agent'),
+               ('reason',   u'Reason'),
+               ]
+    data = ({'no': i+1,
+             'regdate': utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M'),
+             'name': p.fullname,
+             'email': p.email,
+             'company': p.company,
+             'jobtitle': p.jobtitle,
+             'twitter': p.twitter,
+             'tshirt': d_tshirt.get(str(p.tshirtsize), p.tshirtsize),
+             'referrer': d_referrer.get(str(p.referrer), p.referrer),
+             'category': d_category.get(str(p.category), p.category),
+             'ipaddr': p.ipaddr,
+             'approved': {True: 'Yes', False: 'No'}[p.approved],
+             'rsvp': {'A': u'', 'Y': u'Yes', 'M': u'Maybe', 'N': u'No'}[p.rsvp],
+             'agent': p.useragent,
+             'reason': p.reason,
+             } for i, p in enumerate(Participant.query.filter_by(edition=edition)))
+    return render_template('datatable.html', headers=headers, data=data,
+                           title=u'Participant data')
+
+
+@app.route('/admin/classify/<edition>', methods=['GET', 'POST'])
+@adminkey('ACCESSKEY_APPROVE')
+def admin_classify(edition):
+    if request.method == 'GET':
         tz = timezone(app.config['TIMEZONE'])
-        headers = [('no',       u'Sl No'),
-                   ('regdate',  u'Date'),
-                   ('name',     u'Name'),
-                   ('email',    u'Email'),
-                   ('company',  u'Company'),
-                   ('jobtitle', u'Job Title'),
-                   ('twitter',  u'Twitter'),
-                   ('ipaddr',   u'IP Address'),
-                   ('approved', u'Approved'),
-                   ('RSVP',     u'RSVP'),
-                   ]
-        if not skipreason:
-            headers.append(('reason',   u'Reason'))
-        data = ({'no': i+1,
-                 'regdate': utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M'),
-                 'name': p.fullname,
-                 'email': p.email,
-                 'company': p.company,
-                 'jobtitle': p.jobtitle,
-                 'twitter': p.twitter,
-                 'ipaddr': p.ipaddr,
-                 'approved': {True: 'Yes', False: 'No'}[p.approved],
-                 'rsvp': {'A': u'', 'Y': u'Yes', 'M': u'Maybe', 'N': u'No'}[p.rsvp],
-                 'reason': p.reason,
-                 } for i, p in enumerate(Participant.query.all()))
-        return render_template('datatable.html', headers=headers, data=data,
-                               title=u'Participant data')
-    else:
-        abort(401)
-
-
-@app.route('/admin/dnr/<key>')
-def admin_data_no_reason(key):
-    return admin_data(key, skipreason=True)
-
-
-@app.route('/admin/classify/<key>', methods=['GET'])
-def admin_classifyform(key):
-    if key and key in app.config['ACCESSKEY_APPROVE']:
-        tz = timezone(app.config['TIMEZONE'])
-        return render_template('classify.html', participants=Participant.query.all(),
+        return render_template('classify.html', participants=Participant.query.filter_by(edition=edition),
                                utc=utc, tz=tz, enumerate=enumerate, key=key)
-
-
-@app.route('/admin/classify/<key>', methods=['POST'])
-def admin_classify(key):
-    if key and key in app.config['ACCESSKEY_APPROVE']:
+    elif request.method == 'POST':
         p = Participant.query.get(request.form['id'])
         if p:
             p.category = request.form['category']
-    else:
-        abort(401)
+        # TODO: Return status
 
 
-@app.route('/admin/approve/<key>', methods=['GET'])
-def admin_approveform(key):
-    if key and key in app.config['ACCESSKEY_APPROVE']:
+@app.route('/admin/approve/<edition>', methods=['GET', 'POST'])
+@adminkey('ACCESSKEY_APPROVE')
+def admin_approve(edition):
+    if request.method == 'GET':
         tz = timezone(app.config['TIMEZONE'])
-        return render_template('approve.html', participants=Participant.query.all(),
-                               utc=utc, tz=tz, enumerate=enumerate, key=key)
-    else:
-        abort(401)
-
-
-@app.route('/admin/approve/<key>', methods=['POST'])
-def admin_approve(key):
-    if key and key in app.config['ACCESSKEY_APPROVE']:
+        return render_template('approve.html', participants=Participant.query.filter_by(edition=edition),
+                               utc=utc, tz=tz, enumerate=enumerate, edition=edition)
+    elif request.method == 'POST':
         p = Participant.query.get(request.form['id'])
         if not p:
             status = "No such user"
@@ -531,65 +549,53 @@ def admin_approve(key):
                         status = e.msg
                 db.session.commit()
             elif 'action.approve' in request.form:
-                p.approved = True
-                status = "Tada!"
-                mailsent = False
-                # 1. Make user account and activate it
-                user = makeuser(p)
-                user.active = True
-                # 2. Add to MailChimp
-                if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:
-                    mc = MailChimp(app.config['MAILCHIMP_API_KEY'])
-                    try:
-                        mc.listSubscribe(
-                            id = app.config['MAILCHIMP_LIST_ID'],
-                            email_address = p.email,
-                            merge_vars = {'FULLNAME': p.fullname,
-                                          'JOBTITLE': p.jobtitle,
-                                          'COMPANY': p.company,
-                                          'TWITTER': p.twitter,
-                                          'PRIVATEKEY': user.privatekey,
-                                          'UID': user.uid},
-                            double_optin = False
-                            )
-                    except MailChimpError, e:
-                        status = e.msg
-                        if e.code == 214: # Already subscribed
-                            mailsent = True
-                # 3. Send notice of approval
-                if not mailsent:
+                # Check for dupe participant (same email, same edition)
+                dupe = False
+                for pd in Participant.query.filter_by(edition=p.edition, email=p.email):
+                    if pd.id != p.id:
+                        if p.user:
+                            dupe = True
+                            break
+                if dupe == False:
+                    p.approved = True
+                    status = "Tada!"
+                    # 1. Make user account and activate it
+                    user = makeuser(p)
+                    user.active = True
+                    # 2. Add to MailChimp
+                    if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:
+                        mc = MailChimp(app.config['MAILCHIMP_API_KEY'])
+                        addmailchimp(mc, p)
+                    # 3. Send notice of approval
                     msg = Message(subject="Your registration has been approved",
                                   recipients = [p.email])
-                    msg.body = render_template("approve_notice.md", p=p)
+                    msg.body = render_template("approve_notice_%s.md" % edition, p=p)
                     msg.html = markdown(msg.body)
-                    with app.open_resource("static/doctypehtml5.ics") as ics:
+                    with app.open_resource("static/doctypehtml5-%s.ics" % edition) as ics:
                         msg.attach("doctypehtml5.ics", "text/calendar", ics.read())
                     mail.send(msg)
-                db.session.commit()
+                    db.session.commit()
+                else:
+                    status = "Dupe"
             else:
                 status = 'Unknown action'
         if request.is_xhr:
             return status
         else:
-            return redirect(url_for('admin_approveform', key=key), code=303)
+            return redirect(url_for('admin_approve', key=key), code=303)
     else:
         abort(401)
 
 
-@app.route('/admin/venue/<key>', methods=['GET'])
-def admin_venueform(key):
-    if key and key in app.config['ACCESSKEY_APPROVE']:
+@app.route('/admin/venue/<edition>', methods=['GET', 'POST'])
+@adminkey('ACCESSKEY_APPROVE')
+def admin_venue(edition):
+    if request.method == 'GET':
         if 'email' in request.args:
             return admin_venue(key, 'venueregemail', request.args['email'])
         else:
             return render_template('venuereg.html', key=key)
-    else:
-        abort(401)
-
-
-@app.route('/admin/venue/<key>', methods=['POST'])
-def admin_venue(key, formid=None, email=None):
-    if key and key in app.config['ACCESSKEY_APPROVE']:
+    elif request.method =='POST':
         formid = request.form.get('form.id', formid)
         if formid == 'venueregemail':
             email = request.form.get('email', email)
@@ -625,6 +631,7 @@ def admin_venue(key, formid=None, email=None):
                 participant = Participant()
                 regform.populate_obj(participant)
                 participant.ipaddr = request.environ['REMOTE_ADDR']
+                # TODO: Make user and add to mailchimp
                 db.session.add(participant)
                 db.session.commit()
                 return render_template('venueregsuccess.html', key=key, p=participant)
@@ -633,9 +640,7 @@ def admin_venue(key, formid=None, email=None):
                                        regform=regform, ajax_re_register=True)
         else:
             flash("Unknown form submission", 'error')
-            return redirect(url_for('admin_venueform', key=key), code=303)
-    else:
-        abort(401)
+            return redirect(url_for('admin_venue', key=key), code=303)
 
 
 # ---------------------------------------------------------------------------
@@ -645,20 +650,26 @@ def makeuser(participant):
     """
     Convert a participant into a user. Returns User object.
     """
-    user = User.query.filter_by(email=participant.email).first()
-    if user is None:
-        user = User(email=participant.email, participant=participant)
-        # These defaults don't get auto-added until the session is committed,
-        # but we need them before, so we have to manually assign values here.
-        user.privatekey = newid()
-        user.uid = newid()
-        db.session.add(user)
+    if participant.user:
+        return participant.user
+    else:
+        user = User.query.filter_by(email=participant.email).first()
+        if user is not None:
+            participant.user = user
+        else:
+            user = User(fullname=participant.fullname, email=participant.email)
+            participant.user = user
+            # These defaults don't get auto-added until the session is committed,
+            # but we need them before, so we have to manually assign values here.
+            user.privatekey = newid()
+            user.uid = newid()
+            db.session.add(user)
     return user
 
 
 def _makeusers():
     """
-    Helper function to create user accounts. Meant for one-time user only.
+    Helper function to create user accounts. Meant for one-time use only.
     """
     if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:
         mc = MailChimp(app.config['MAILCHIMP_API_KEY'])
@@ -669,19 +680,29 @@ def _makeusers():
             # Make user, but don't make account active
             user = makeuser(p)
             if mc is not None:
-                mc.listSubscribe(
-                    id = app.config['MAILCHIMP_LIST_ID'],
-                    email_address = p.email,
-                    merge_vars = {'FULLNAME': p.fullname,
-                                  'JOBTITLE': p.jobtitle,
-                                  'COMPANY': p.company,
-                                  'TWITTER': p.twitter,
-                                  'PRIVATEKEY': user.privatekey,
-                                  'UID': user.uid},
-                    double_optin = False,
-                    update_existing = True
-                    )
+                addmailchimp(mc, p)
     db.session.commit()
+
+
+def addmailchimp(mc, p):
+    """
+    Add user to mailchimp list
+    """
+    editions = [ap.edition for ap in p.user.participants if p.user]
+    groups = {'Editions': {'name': 'Editions', 'groups': ','.join(editions)}}
+    mc.listSubscribe(
+        id = app.config['MAILCHIMP_LIST_ID'],
+        email_address = p.email,
+        merge_vars = {'FULLNAME': p.fullname,
+                      'JOBTITLE': p.jobtitle,
+                      'COMPANY': p.company,
+                      'TWITTER': p.twitter,
+                      'PRIVATEKEY': p.user.privatekey,
+                      'UID': p.user.uid,
+                      'GROUPINGS': groups},
+        double_optin = False,
+        update_existing = True
+        )
 
 
 # ---------------------------------------------------------------------------

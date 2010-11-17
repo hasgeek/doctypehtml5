@@ -14,6 +14,7 @@
       <li><a href="#overview">Overview</a></li>
       <li><a href="#agenda">Agenda</a></li>
       <li><a href="#registration">Registration</a></li>
+      <li><a href="#schedule">Schedule</a></li>
       <li><a href="#venue">Venue</a></li>
       <li><a href="#gallery">Gallery</a></li>
       <li><a href="#faq">FAQ</a></li>
@@ -27,6 +28,9 @@
     </div>
     <div id="registration">
       {% include 'registration.html' %}
+    </div>
+    <div id="schedule">
+      {% include 'schedule.html' %}
     </div>
     <div id="venue">
       {% include 'venue.html' %}
@@ -47,19 +51,22 @@
     DocType HTML<sup>5</sup> is a one day conference on HTML5, CSS3 and related technologies.
   </p>
   <div class="sponsorlogos">
-    <div id="sponsor-platinum" class="tile bubbleInfo">
+    <div id="sponsor-platinum" class="tile">
       <span class="title">Platinum Sponsor</span><br/>
+      <a href="http://www.microsoft.com/">
+        <img src="{{ url_for('static', filename='img/logos/microsoft.jpg') }}" width="140" height="70"
+            alt="Microsoft"/>
+      </a>
+    </div>
+    <div id="sponsor-gold" class="tile bubbleInfo">
+      <span class="title">Gold Sponsor</span><br/>
       {% block sponsorshipopen %}
         <img class="trigger" src="{{ url_for('static', filename='img/logos/blank.png') }}" width="90" height="70" alt="Available"/>
         <div class="popup">
           Sponsor position available.
-          <a href="mailto:%63%6f%6e%74%61%63%74%40%64%6f%63%74%79%70%65%68%74%6d%6c%35%2e%69%6e">Write to us</a>.        
+          <a href="mailto:%63%6f%6e%74%61%63%74%40%64%6f%63%74%79%70%65%68%74%6d%6c%35%2e%69%6e">Write to us</a>.
         </div>
       {% endblock %}
-    </div>
-    <div id="sponsor-gold" class="tile bubbleInfo">
-      <span class="title">Gold Sponsor</span><br/>
-      {{ self.sponsorshipopen() }}
     </div>
     <div id="sponsor-silver" class="tile bubbleInfo">
       <span class="title">Silver Sponsor</span><br/>
@@ -86,6 +93,7 @@
       var mainTabs = $("#tabs").tabs({
         select: function(ev, ui) {
           location.href = '#/' + ui.tab.href.replace(/.*#(.*)/, '$1');
+          // TODO: If this tab has subtabs, put current subtab in the URL
           return true;
         }
       });
@@ -94,13 +102,21 @@
         location.href = '#/' + ui.tab.href.replace(/.*#(.*)/, '$1').replace(/-/, '/');
         return true;
       }
-      // Activate vertical tabs in gallery
+      // Activate vertical sub-tabs
+      var scheduleTabs = $("#schedule-tabs").tabs({
+        select: subtabselect
+      }).addClass('ui-tabs-vertical ui-helper-clearfix');
+      var venueTabs = $("#venue-tabs").tabs({
+        select: subtabselect
+      }).addClass('ui-tabs-vertical ui-helper-clearfix');
       var galleryTabs = $("#gallery-tabs").tabs({
         select: subtabselect
       }).addClass('ui-tabs-vertical ui-helper-clearfix');
       // Keep track of tabs with sub-tabs
       var subtabs = {
-        gallery: galleryTabs
+        schedule: scheduleTabs,
+        venue: venueTabs,
+        gallery: galleryTabs,
       };
       // Fix CSS for tab display
       $(".ui-tabs").removeClass('ui-corner-all')
@@ -143,59 +159,52 @@
    // Popup code from http://jqueryfordesigners.com/coda-popup-bubbles/
    // License is not specified.
     $(function () {
-        $('.bubbleInfo').each(function () {
-            var distance = 10;
-            var time = 250;
-            var hideDelay = 500;
+      $('.bubbleInfo').each(function () {
+        var distance = 10;
+        var time = 250;
+        var hideDelay = 500;
+        var hideDelayTimer = null;
+        var beingShown = false;
+        var shown = false;
+        var trigger = $('.trigger', this);
+        var info = $('.popup', this).css('opacity', 0);
 
-            var hideDelayTimer = null;
-
-            var beingShown = false;
-            var shown = false;
-            var trigger = $('.trigger', this);
-            var info = $('.popup', this).css('opacity', 0);
-
-
-            $([trigger.get(0), info.get(0)]).mouseover(function () {
-                if (hideDelayTimer) clearTimeout(hideDelayTimer);
-                if (beingShown || shown) {
-                    // don't trigger the animation again
-                    return;
-                } else {
-                    // reset position of info box
-                    beingShown = true;
-
-                    info.css({
-                        top: -10,
-                        left: -30,
-                        display: 'block'
-                    }).animate({
-                        top: '-=' + distance + 'px',
-                        opacity: 1
-                    }, time, 'swing', function() {
-                        beingShown = false;
-                        shown = true;
-                    });
-                }
-
-                return false;
-            }).mouseout(function () {
-                if (hideDelayTimer) clearTimeout(hideDelayTimer);
-                hideDelayTimer = setTimeout(function () {
-                    hideDelayTimer = null;
-                    info.animate({
-                        top: '-=' + distance + 'px',
-                        opacity: 0
-                    }, time, 'swing', function () {
-                        shown = false;
-                        info.css('display', 'none');
-                    });
-
-                }, hideDelay);
-
-                return false;
+        $([trigger.get(0), info.get(0)]).mouseover(function () {
+          if (hideDelayTimer) clearTimeout(hideDelayTimer);
+          if (beingShown || shown) {
+            // don't trigger the animation again
+            return;
+          } else {
+            // reset position of info box
+            beingShown = true;
+            info.css({
+              top: -10,
+              left: -30,
+              display: 'block'
+            }).animate({
+              top: '-=' + distance + 'px',
+              opacity: 1
+            }, time, 'swing', function() {
+              beingShown = false;
+              shown = true;
             });
+          }
+          return false;
+        }).mouseout(function () {
+            if (hideDelayTimer) clearTimeout(hideDelayTimer);
+            hideDelayTimer = setTimeout(function () {
+              hideDelayTimer = null;
+              info.animate({
+                top: '-=' + distance + 'px',
+                opacity: 0
+              }, time, 'swing', function () {
+                shown = false;
+                info.css('display', 'none');
+              });
+            }, hideDelay);
+            return false;
         });
+      });
     });
   </script>
 
@@ -240,6 +249,44 @@
     });
   </script>
 
+  {# Google Maps for venue #}
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <script type="text/javascript">
+    $(function() {
+      var makemap = function(mapelement, tabelement, lat, lon, title) {
+        var latlng = new google.maps.LatLng(lat, lon);
+        var mapOptions = {
+          zoom: 14,
+          center: latlng,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById(mapelement), mapOptions);
+        var marker = new google.maps.Marker({
+          position: latlng,
+          map: map,
+          title: title
+        });
+        // Setup map to resize when tab is shown
+        $('#tabs').bind('tabsshow', function(event, ui) {
+          if (ui.panel.id == "venue") {
+            google.maps.event.trigger(map, "resize");
+            // XXX: Wish this could be avoided, but resizing isn't enough.
+            map.setCenter(latlng);
+          }
+        });
+        $('#venue-tabs').bind('tabsshow', function(event, ui) {
+          if (ui.panel.id == tabelement) {
+            google.maps.event.trigger(map, "resize");
+            // XXX: Same as above
+            map.setCenter(latlng);
+          }
+        });
+      };
+      makemap('venuemap-bangalore', 'venue-bangalore', 12.8937, 77.6008, "IIMB Auditorium");
+      makemap('venuemap-chennai', 'venue-chennai', 12.99237, 80.23762, "IIT Madras");
+      makemap('venuemap-pune', 'venue-pune', 18.530520, 73.855473, "College of Engineering");
+    });
+  </script>
   {# Gallery using delicious.com #}
   <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.delicious.js') }}"></script>
   <script type="text/javascript">
