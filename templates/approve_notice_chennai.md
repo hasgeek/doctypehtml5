@@ -48,7 +48,7 @@ Once again, thanks for registering, and see you on November 27!
 
 Sincerely,
 
-Kiran Jonnalagadda
+Kiran Jonnalagadda  
 On behalf of the planning team
 
 
