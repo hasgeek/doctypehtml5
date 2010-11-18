@@ -139,6 +139,7 @@
         // New #/ Ajax URL
         this.get('#/:tab/:subtab', function(context) {
           mainTabs.tabs('select', '#' + this.params['tab']);
+          if (_gaq) {_gaq.push(['_trackPageview', '/#/' + this.params['tab'] + '/' + this.params['subtab']]);};
           if (this.params['tab'] in subtabs) {
             subtabs[this.params['tab']].tabs('select', this.params['subtab']);
           };
@@ -146,6 +147,7 @@
         // New #/ Ajax URL
         this.get('#/:tab', function(context) {
           mainTabs.tabs('select', '#' + this.params['tab']);
+          if (_gaq) {_gaq.push(['_trackPageview', '/#/' + this.params['tab']]);};
         });
       }).run();
     });

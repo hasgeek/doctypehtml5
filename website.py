@@ -440,10 +440,11 @@ def admin_reasons(edition):
 def admin_list(edition):
     headers = [('no', u'Sl No'), ('name', u'Name'), ('company', u'Company'),
                ('jobtitle', u'Job Title'), ('twitter', 'Twitter'),
-               ('rsvp', 'RSVP'), ('attended', 'Attended')]
+               ('approved', 'Approved'), ('rsvp', 'RSVP'), ('attended', 'Attended')]
     data = ({'no': i+1, 'name': p.fullname, 'company': p.company,
              'jobtitle': p.jobtitle,
              'twitter': p.twitter,
+             'approved': p.approved,
              'rsvp': {'Y': 'Yes', 'N': 'No', 'M': 'Maybe', 'A': 'Awaiting'}[p.rsvp],
              'attended': ['No', 'Yes'][p.attended]
              } for i, p in enumerate(Participant.query.order_by('fullname').filter_by(edition=edition)))
@@ -549,34 +550,37 @@ def admin_approve(edition):
                         status = e.msg
                 db.session.commit()
             elif 'action.approve' in request.form:
-                # Check for dupe participant (same email, same edition)
-                dupe = False
-                for pd in Participant.query.filter_by(edition=p.edition, email=p.email):
-                    if pd.id != p.id:
-                        if p.user:
-                            dupe = True
-                            break
-                if dupe == False:
-                    p.approved = True
-                    status = "Tada!"
-                    # 1. Make user account and activate it
-                    user = makeuser(p)
-                    user.active = True
-                    # 2. Add to MailChimp
-                    if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:
-                        mc = MailChimp(app.config['MAILCHIMP_API_KEY'])
-                        addmailchimp(mc, p)
-                    # 3. Send notice of approval
-                    msg = Message(subject="Your registration has been approved",
-                                  recipients = [p.email])
-                    msg.body = render_template("approve_notice_%s.md" % edition, p=p)
-                    msg.html = markdown(msg.body)
-                    with app.open_resource("static/doctypehtml5-%s.ics" % edition) as ics:
-                        msg.attach("doctypehtml5.ics", "text/calendar", ics.read())
-                    mail.send(msg)
-                    db.session.commit()
+                if p.approved:
+                    status = "Already approved"
                 else:
-                    status = "Dupe"
+                    # Check for dupe participant (same email, same edition)
+                    dupe = False
+                    for pd in Participant.query.filter_by(edition=p.edition, email=p.email):
+                        if pd.id != p.id:
+                            if p.user:
+                                dupe = True
+                                break
+                    if dupe == False:
+                        p.approved = True
+                        status = "Tada!"
+                        # 1. Make user account and activate it
+                        user = makeuser(p)
+                        user.active = True
+                        # 2. Add to MailChimp
+                        if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:
+                            mc = MailChimp(app.config['MAILCHIMP_API_KEY'])
+                            addmailchimp(mc, p)
+                        # 3. Send notice of approval
+                        msg = Message(subject="Your registration has been approved",
+                                      recipients = [p.email])
+                        msg.body = render_template("approve_notice_%s.md" % edition, p=p)
+                        msg.html = markdown(msg.body)
+                        with app.open_resource("static/doctypehtml5-%s.ics" % edition) as ics:
+                            msg.attach("doctypehtml5.ics", "text/calendar", ics.read())
+                        mail.send(msg)
+                        db.session.commit()
+                    else:
+                        status = "Dupe"
             else:
                 status = 'Unknown action'
         if request.is_xhr:
