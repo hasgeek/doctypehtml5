@@ -70,11 +70,17 @@
     </div>
     <div id="sponsor-silver" class="tile bubbleInfo">
       <span class="title">Silver Sponsor</span><br/>
-      {{ self.sponsorshipopen() }}
+      <a href="http://www.cognizant.com/">
+        <img src="{{ url_for('static', filename='img/logos/cognizant.png') }}" width="195" height="70"
+            alt="Cognizant Technology Solutions"/>
+      </a>
     </div>
-    <div id="sponsor-community" class="tile bubbleInfo">
+    <div id="sponsor-community" class="tile">
       <span class="title">Community Sponsor</span><br/>
-      {{ self.sponsorshipopen() }}
+      <a href="http://www.altheasystems.com/">
+        <img src="{{ url_for('static', filename='img/logos/althea.png') }}" width="140" height="70"
+            alt="Althea Systems"/>
+        </a>
     </div>
     <div id="organizer" class="tile">
       <span class="title">Event By</span><br/>
