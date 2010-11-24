@@ -8,13 +8,13 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
 SECRET_KEY = 'make this something random'
 #: Timezone for displayed datetimes
 TIMEZONE = 'Asia/Calcutta'
-#: Access keys for /admin/reasons/<key>
+#: Access keys for /admin/reasons/<edition>
 ACCESSKEY_REASONS = ['test']
-#: Access keys for /admin/list/<key>
+#: Access keys for /admin/list/<edition>
 ACCESSKEY_LIST = ['test']
-#: Access key for /admin/data/<key> and /admin/dnr/<key>
+#: Access key for /admin/data/<edition>
 ACCESSKEY_DATA = ['test']
-#: Access key for /admin/approve/<key>
+#: Access key for /admin/approve/<edition>
 ACCESSKEY_APPROVE = ['test']
 #: MailChimp API key to sync participant list
 #: If you don't want to use MailChimp, leave this blank
