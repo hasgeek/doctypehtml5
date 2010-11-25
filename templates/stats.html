@@ -24,6 +24,23 @@
   <p>
     <img src="http://chart.apis.google.com/chart?cht=p3&amp;chd=t:{{ yes }},{{ no }},{{ maybe }},{{ awaiting }}&amp;chs=360x130&amp;chl=Yes ({{ yes }})|No ({{ no }})|Maybe ({{ maybe }})|Awaiting ({{ awaiting }})" alt="RSVP Chart"/>
   </p>
+  <h2>T-shirt sizes</h2>
+  <p>
+{#    <img src="http://chart.apis.google.com/chart?cht=bvs&amp;chd=t:{{ ','.join([row[1] for row in tshirts]) }}&amp;chs=360x130&amp;chxt=x,y&amp;chx1=0:{% for row in tshirts %}|{{ row[0] }}{% endfor %}" alt="T-shirt sizes"/> #}
+  </p>
+  <table class="listing">
+    <thead>
+      <tr>
+        <td>Size</td>
+        <td>Count</td>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for size, count in tshirts %}
+        <tr><td>{{ size }}</td><td>{{ count }}</td></tr>
+      {% endfor -%}
+    </tbody>
+  </table>
 {% endblock %}
 
 {% block footer %}

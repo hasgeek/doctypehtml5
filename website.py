@@ -43,7 +43,7 @@ USER_CATEGORIES = [
 USER_CITIES = [
     ('', ''),
     ('bangalore', 'Bangalore - October 9, 2010 (over!)'),
-    ('chennai', 'Chennai - November 27, 2010'),
+    ('chennai', 'Chennai - November 27, 2010 (closed)'),
     ('pune', 'Pune - December 4, 2010'),
     ('hyderabad', 'Hyderabad - January 22, 2011'),
     ]
@@ -229,8 +229,8 @@ class RegisterForm(Form):
     reason = TextAreaField('Your reasons for attending', validators=[Required()])
 
     def validate_edition(self, field):
-        if field.data == u'bangalore':
-            raise ValidationError, "Registrations are closed for this city"
+        if field.data in [u'bangalore', u'chennai']:
+            raise ValidationError, "Registrations are closed for this edition"
 
 
 class AccessKeyForm(Form):
@@ -458,14 +458,24 @@ def admin_list(edition):
 
 @app.route('/admin/stats/<edition>', methods=['GET', 'POST'])
 @adminkey('ACCESSKEY_LIST')
-def admin_stats(key):
-    rsvp_yes = Participant.query.filter_by(approved=True, rsvp='Y').count()
-    rsvp_no = Participant.query.filter_by(approved=True, rsvp='N').count()
-    rsvp_maybe = Participant.query.filter_by(approved=True, rsvp='M').count()
-    rsvp_awaiting = Participant.query.filter_by(approved=True, rsvp='A').count()
+def admin_stats(edition):
+    rsvp_yes = Participant.query.filter_by(edition=edition, approved=True, rsvp='Y').count()
+    rsvp_no = Participant.query.filter_by(edition=edition, approved=True, rsvp='N').count()
+    rsvp_maybe = Participant.query.filter_by(edition=edition, approved=True, rsvp='M').count()
+    rsvp_awaiting = Participant.query.filter_by(edition=edition, approved=True, rsvp='A').count()
+
+    tshirts = []
+    for size, label in TSHIRT_SIZES:
+        if size:
+            qsize = int(size)
+        else:
+            qsize = None
+        tshirts.append([label, Participant.query.filter_by(edition=edition, tshirtsize=qsize).count()])
+
     return render_template('stats.html', yes=rsvp_yes, no=rsvp_no,
                            maybe=rsvp_maybe, awaiting=rsvp_awaiting,
-                           title=u'RSVP Statistics')
+                           tshirts=tshirts,
+                           title=u'Statistics')
 
 
 @app.route('/admin/data/<edition>', methods=['GET', 'POST'])
