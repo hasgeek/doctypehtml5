@@ -234,7 +234,7 @@ class RegisterForm(Form):
 
 
 class AccessKeyForm(Form):
-    key = TextField('Access Key', validators=[Required()])
+    key = PasswordField('Access Key', validators=[Required()])
 
 
 class LoginForm(Form):
@@ -307,8 +307,8 @@ def logout():
     return redirect(url_for('index'), code=303)
 
 
-@app.route('/rsvp')
-def rsvp():
+@app.route('/rsvp/<edition>')
+def rsvp(edition):
     key = request.args.get('key')
     choice = request.args.get('rsvp')
     if key is None:
@@ -321,13 +321,18 @@ def rsvp():
     if user is None:
         flash(u"Sorry, that access key is not in our records.", 'error')
         return redirect(url_for('index'), code=303)
-    user.participant.rsvp = choice
+    participant = Participant.query.filter_by(user=user, edition=edition).first()
+    if participant:
+        participant.rsvp = choice
+    else:
+        flash(u"You did not register for this edition, %s." % user.fullname, 'error')
+        return redirect(url_for('index'), code=303)
     if choice == 'Y':
-        flash(u"Yay! So glad you will be joining us.", 'info')
+        flash(u"Yay! So glad you will be joining us, %s." % user.fullname , 'info')
     elif choice == 'N':
-        flash(u"Sorry you can't make it. Hope you’ll join us next time.", 'error') # Fake 'error' for frowny icon
+        flash(u"Sorry you can't make it, %s. Hope you’ll join us next time." % user.fullname, 'error') # Fake 'error' for frowny icon
     elif choice == 'M':
-        flash(u"We recorded you as Maybe Attending. When you know better, could you select Yes or No?", 'info')
+        flash(u"We recorded you as Maybe Attending, %s. When you know better, could you select Yes or No?" % user.fullname, 'info')
     db.session.commit()
     return redirect(url_for('index'), code=303)
 
@@ -534,6 +539,7 @@ def admin_approve(edition):
         else:
             if 'action.undo' in request.form:
                 p.approved = False
+                p.user = None
                 status = 'Undone!'
                 # Remove from MailChimp
                 if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:
@@ -555,9 +561,9 @@ def admin_approve(edition):
                 else:
                     # Check for dupe participant (same email, same edition)
                     dupe = False
-                    for pd in Participant.query.filter_by(edition=p.edition, email=p.email):
-                        if pd.id != p.id:
-                            if p.user:
+                    for other in Participant.query.filter_by(edition=p.edition, email=p.email):
+                        if other.id != p.id:
+                            if other.user:
                                 dupe = True
                                 break
                     if dupe == False:
