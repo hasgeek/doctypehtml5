@@ -1,50 +1,36 @@
 {% extends "layout.html" %}
-{% block title %}{{ title|e }}{% endblock %}
+{% block title %}Statistics{% endblock %}
 
 {% block header %}
-  <h1>{{ title|e }}</h1>
+  <h1>Statistics</h1>
 {% endblock %}
 
 {% block pageheaders %}
   <style type="text/css">
     #container {
       padding-top: 0;
+      text-align: center;
     }
     #container, footer {
       max-width: 100%;
     }
-    
-    footer {
-      text-align: left;
-    }
+    h1 {
+      text-transform: none;
+    }    
   </style>
 {% endblock %}
 
 {% block content %}
-  <p>
-    <img src="http://chart.apis.google.com/chart?cht=p3&amp;chd=t:{{ yes }},{{ no }},{{ maybe }},{{ awaiting }}&amp;chs=360x130&amp;chl=Yes ({{ yes }})|No ({{ no }})|Maybe ({{ maybe }})|Awaiting ({{ awaiting }})" alt="RSVP Chart"/>
-  </p>
-  <h2>T-shirt sizes</h2>
-  <p>
-{#    <img src="http://chart.apis.google.com/chart?cht=bvs&amp;chd=t:{{ ','.join([row[1] for row in tshirts]) }}&amp;chs=360x130&amp;chxt=x,y&amp;chx1=0:{% for row in tshirts %}|{{ row[0] }}{% endfor %}" alt="T-shirt sizes"/> #}
-  </p>
-  <table class="listing">
-    <thead>
-      <tr>
-        <td>Size</td>
-        <td>Count</td>
-      </tr>
-    </thead>
-    <tbody>
-      {%- for size, count in tshirts %}
-        <tr><td>{{ size }}</td><td>{{ count }}</td></tr>
-      {% endfor -%}
-    </tbody>
-  </table>
-{% endblock %}
-
-{% block footer %}
-  <p>
-    This is a restricted page. Do not share this URL.
-  </p>
+<h2>All registrations</h2>
+<p>
+  <img src="{{ all_browsers }}"/>
+  <img src="{{ all_brver }}"/>
+  <img src="{{ all_platforms }}"/>
+</p>
+<h2>At venue</h2>
+<p>
+  <img src="{{ present_browsers }}"/>
+  <img src="{{ present_brver }}"/>
+  <img src="{{ present_platforms }}"/>
+</p>
 {% endblock %}

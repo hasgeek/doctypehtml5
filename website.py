@@ -6,18 +6,20 @@ Website server for doctypehtml5.in
 """
 
 from __future__ import with_statement
+from collections import defaultdict
 from datetime import datetime
 from uuid import uuid4
 from base64 import b64encode
 from flask import Flask, abort, request, render_template, redirect, url_for
 from flask import flash, session, g
-from werkzeug import generate_password_hash, check_password_hash
+from werkzeug import generate_password_hash, check_password_hash, UserAgent
 from flaskext.sqlalchemy import SQLAlchemy
 from flaskext.mail import Mail, Message
 from flaskext.wtf import Form, TextField, TextAreaField, PasswordField
 from flaskext.wtf import SelectField, Required, Email, ValidationError
 from pytz import utc, timezone
 from markdown import markdown
+import pygooglechart
 try:
     from greatape import MailChimp, MailChimpError
 except ImportError:
@@ -461,26 +463,90 @@ def admin_list(edition):
     return render_template('datatable.html', headers=headers, data=data,
                            title=u'List of participants')
 
+@app.route('/admin/rsvp/<edition>', methods=['GET', 'POST'])
+@adminkey('ACCESSKEY_LIST')
+def admin_rsvp(edition):
+   rsvp_yes = Participant.query.filter_by(edition=edition, approved=True, rsvp='Y').count()
+   rsvp_no = Participant.query.filter_by(edition=edition, approved=True, rsvp='N').count()
+   rsvp_maybe = Participant.query.filter_by(edition=edition, approved=True, rsvp='M').count()
+   rsvp_awaiting = Participant.query.filter_by(edition=edition, approved=True, rsvp='A').count()
+
+   return render_template('rsvp.html', yes=rsvp_yes, no=rsvp_no,
+                          maybe=rsvp_maybe, awaiting=rsvp_awaiting,
+                          title=u'RSVP Statistics')
+
+
 @app.route('/admin/stats/<edition>', methods=['GET', 'POST'])
 @adminkey('ACCESSKEY_LIST')
 def admin_stats(edition):
-    rsvp_yes = Participant.query.filter_by(edition=edition, approved=True, rsvp='Y').count()
-    rsvp_no = Participant.query.filter_by(edition=edition, approved=True, rsvp='N').count()
-    rsvp_maybe = Participant.query.filter_by(edition=edition, approved=True, rsvp='M').count()
-    rsvp_awaiting = Participant.query.filter_by(edition=edition, approved=True, rsvp='A').count()
 
-    tshirts = []
-    for size, label in TSHIRT_SIZES:
-        if size:
-            qsize = int(size)
-        else:
-            qsize = None
-        tshirts.append([label, Participant.query.filter_by(edition=edition, tshirtsize=qsize).count()])
+    # Chart sizes
+    CHART_X = 800
+    CHART_Y = 370
 
-    return render_template('stats.html', yes=rsvp_yes, no=rsvp_no,
-                           maybe=rsvp_maybe, awaiting=rsvp_awaiting,
-                           tshirts=tshirts,
-                           title=u'Statistics')
+    all_browsers = defaultdict(int)
+    all_brver = defaultdict(int)
+    all_platforms = defaultdict(int)
+    present_browsers = defaultdict(int)
+    present_brver = defaultdict(int)
+    present_platforms = defaultdict(int)
+
+    c_all = 0
+    c_present = 0
+
+    for p in Participant.query.filter_by(edition=edition):
+        if p.useragent:
+            c_all += 1
+            ua = UserAgent(p.useragent)
+            all_browsers[ua.browser] += 1
+            all_brver['%s %s' % (ua.browser, ua.version.split('.')[0])] += 1
+            all_platforms[ua.platform] += 1
+    for p in Participant.query.filter_by(edition=edition, attended=True):
+        if p.useragent:
+            c_present += 1
+            ua = UserAgent(p.useragent)
+            present_browsers[ua.browser] += 1
+            present_brver['%s %s' % (ua.browser, ua.version.split('.')[0])] += 1
+            present_platforms[ua.platform] += 1
+
+    f_all = 100.0 / c_all
+    f_present = 100.0 / c_present
+
+    # Now make charts
+    # All registrations
+    c_all_browsers = pygooglechart.PieChart2D(CHART_X, CHART_Y)
+    c_all_browsers.add_data(all_browsers.values())
+    c_all_browsers.set_pie_labels(['%s (%.2f%%)' % (key, all_browsers[key]*f_all) for key in all_browsers.keys()])
+
+    c_all_brver = pygooglechart.PieChart2D(CHART_X, CHART_Y)
+    c_all_brver.add_data(all_brver.values())
+    c_all_brver.set_pie_labels(['%s (%.2f%%)' % (key, all_brver[key]*f_all) for key in all_brver.keys()])
+
+    c_all_platforms = pygooglechart.PieChart2D(CHART_X, CHART_Y)
+    c_all_platforms.add_data(all_platforms.values())
+    c_all_platforms.set_pie_labels(['%s (%.2f%%)' % (key, all_platforms[key]*f_all) for key in all_platforms.keys()])
+
+    # Present at venue
+    c_present_browsers = pygooglechart.PieChart2D(CHART_X, CHART_Y)
+    c_present_browsers.add_data(present_browsers.values())
+    c_present_browsers.set_pie_labels(['%s (%.2f%%)' % (key, present_browsers[key]*f_present) for key in present_browsers.keys()])
+
+    c_present_brver = pygooglechart.PieChart2D(CHART_X, CHART_Y)
+    c_present_brver.add_data(present_brver.values())
+    c_present_brver.set_pie_labels(['%s (%.2f%%)' % (key, present_brver[key]*f_present) for key in present_brver.keys()])
+
+    c_present_platforms = pygooglechart.PieChart2D(CHART_X, CHART_Y)
+    c_present_platforms.add_data(present_platforms.values())
+    c_present_platforms.set_pie_labels(['%s (%.2f%%)' % (key, present_platforms[key]*f_present) for key in present_platforms.keys()])
+
+    return render_template('stats.html',
+                           all_browsers = c_all_browsers.get_url(),
+                           all_brver = c_all_brver.get_url(),
+                           all_platforms = c_all_platforms.get_url(),
+                           present_browsers = c_present_browsers.get_url(),
+                           present_brver = c_present_brver.get_url(),
+                           present_platforms = c_present_platforms.get_url()
+                           )
 
 
 @app.route('/admin/data/<edition>', methods=['GET', 'POST'])
@@ -658,6 +724,7 @@ def admin_venue(edition):
                 participant = Participant()
                 regform.populate_obj(participant)
                 participant.ipaddr = request.environ['REMOTE_ADDR']
+                # Do not record participant.useragent since it's a venue computer, not user's.
                 makeuser(participant)
                 db.session.add(participant)
                 if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:

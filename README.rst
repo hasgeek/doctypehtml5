@@ -8,7 +8,7 @@ Source code and templates for the website http://www.doctypehtml5.in/. To run th
 You will need the `Flask <http://flask.pocoo.org/>`__ framework and some
 extensions. To install::
 
-   easy_install Flask Flask-SQLAlchemy Flask-WTF Flask-Mail simplejson pytz Markdown
+   easy_install Flask Flask-SQLAlchemy Flask-WTF Flask-Mail simplejson pytz Markdown pygooglechart
 
 Installing into a ``virtualenv`` is strongly recommended.
 
@@ -28,7 +28,7 @@ setup the Python environment::
    PYTHONPATH=~/python/lib/python2.5/site-packages easy_install --prefix ~/python virtualenv
    PYTHONPATH=~/python/lib/python2.5/site-packages bin/virtualenv ~/python/env --no-site-packages
    source ~/python/env/bin/activate
-   easy_install Flask Flask-SQLAlchemy Flask-WTF Flask-Mail simplejson pytz mysql-python greatape Markdown
+   easy_install Flask Flask-SQLAlchemy Flask-WTF Flask-Mail simplejson pytz mysql-python greatape Markdown pygooglechart
 
 This creates a ``virtualenv`` in ``~/python/env``, activates it, then installs
 Flask and extensions in the ``virtualenv``. Dreamhost does not have
