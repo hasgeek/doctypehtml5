@@ -229,6 +229,11 @@ class RegisterForm(Form):
     reason = TextAreaField('Your reasons for attending', validators=[Required()])
 
     def validate_edition(self, field):
+        if hasattr(self, '_venuereg'):
+            if field.data != self._venuereg:
+                raise ValidationError, "You can't register for that"
+            else:
+                return # Register at venue even if public reg is closed
         if field.data in [u'bangalore', u'chennai']:
             raise ValidationError, "Registrations are closed for this edition"
 
@@ -527,7 +532,7 @@ def admin_classify(edition):
     if request.method == 'GET':
         tz = timezone(app.config['TIMEZONE'])
         return render_template('classify.html', participants=Participant.query.filter_by(edition=edition),
-                               utc=utc, tz=tz, enumerate=enumerate, key=key)
+                               utc=utc, tz=tz, enumerate=enumerate, edition=edition)
     elif request.method == 'POST':
         p = Participant.query.get(request.form['id'])
         if p:
@@ -602,7 +607,7 @@ def admin_approve(edition):
         if request.is_xhr:
             return status
         else:
-            return redirect(url_for('admin_approve', key=key), code=303)
+            return redirect(url_for('admin_approve', edition=edition), code=303)
     else:
         abort(401)
 
@@ -610,27 +615,28 @@ def admin_approve(edition):
 @app.route('/admin/venue/<edition>', methods=['GET', 'POST'])
 @adminkey('ACCESSKEY_APPROVE')
 def admin_venue(edition):
-    if request.method == 'GET':
+    if request.method == 'GET' and 'email' not in request.args:
+        return render_template('venuereg.html', edition=edition)
+    elif request.method =='POST' or 'email' in request.args:
         if 'email' in request.args:
-            return admin_venue(key, 'venueregemail', request.args['email'])
+            formid = 'venueregemail'
         else:
-            return render_template('venuereg.html', key=key)
-    elif request.method =='POST':
-        formid = request.form.get('form.id', formid)
+            formid = request.form.get('form.id')
         if formid == 'venueregemail':
-            email = request.form.get('email', email)
+            email = request.values.get('email')
             if email:
-                p = Participant.query.filter_by(email=email).first()
+                p = Participant.query.filter_by(edition=edition, email=email).first()
                 if p is not None:
                     if p.attended: # Already signed in
                         flash("You have already signed in. Next person please.")
-                        return redirect(url_for('admin_venue', key=key), code=303)
+                        return redirect(url_for('admin_venue', edition=edition), code=303)
                     else:
-                        return render_template('venueregdetails.html', key=key, p=p)
+                        return render_template('venueregdetails.html', edition=edition, p=p)
             # Unknown email address. Ask for new registration
             regform = RegisterForm()
             regform.email.data = email
-            return render_template('venueregnew.html', key=key, regform=regform)
+            regform.edition.data = edition
+            return render_template('venueregnew.html', edition=edition, regform=regform)
         elif formid == 'venueregconfirm':
             id = request.form['id']
             subscribe = request.form.get('subscribe')
@@ -643,24 +649,28 @@ def admin_venue(edition):
             p.attenddate = datetime.utcnow()
             db.session.commit()
             flash("You have been signed in. Next person please.", 'info')
-            return redirect(url_for('admin_venueform', key=key), code=303)
+            return redirect(url_for('admin_venue', edition=edition), code=303)
         elif formid == 'venueregform':
             # Validate form and register
             regform = RegisterForm()
+            regform._venuereg = edition
             if regform.validate_on_submit():
                 participant = Participant()
                 regform.populate_obj(participant)
                 participant.ipaddr = request.environ['REMOTE_ADDR']
-                # TODO: Make user and add to mailchimp
+                makeuser(participant)
                 db.session.add(participant)
+                if MailChimp is not None and app.config['MAILCHIMP_API_KEY'] and app.config['MAILCHIMP_LIST_ID']:
+                    mc = MailChimp(app.config['MAILCHIMP_API_KEY'])
+                    addmailchimp(mc, participant)
                 db.session.commit()
-                return render_template('venueregsuccess.html', key=key, p=participant)
+                return render_template('venueregsuccess.html', edition=edition, p=participant)
             else:
-                return render_template('venueregform.html', key=key,
+                return render_template('venueregform.html', edition=edition,
                                        regform=regform, ajax_re_register=True)
         else:
             flash("Unknown form submission", 'error')
-            return redirect(url_for('admin_venue', key=key), code=303)
+            return redirect(url_for('admin_venue', edition=edition), code=303)
 
 
 # ---------------------------------------------------------------------------

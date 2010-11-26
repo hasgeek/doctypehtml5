@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block content %}
-  <form action="{{ url_for('admin_venue', key=key) }}" method="POST">
+  <form action="{{ url_for('admin_venue', edition=edition) }}" method="POST">
     <input type="hidden" name="_charset_"/>
     <input type="hidden" name="form.id" value="venueregemail"/>
     <p>

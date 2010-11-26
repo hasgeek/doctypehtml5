@@ -1,5 +1,5 @@
 {% from 'macros.html' import renderform, ajaxform %}
-{{ renderform(regform, 'venueregform', url_for('admin_venue', key=key), 'Register') }}
+{{ renderform(regform, 'venueregform', url_for('admin_venue', edition=edition), 'Register') }}
 {% if ajax_re_register %}
   {{ ajaxform('venueregform') }}
 {% endif %}

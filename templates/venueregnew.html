@@ -20,7 +20,7 @@
 {% block content %}
   <p>
     Hello there! We didn’t recognise you. Would you like to register?
-    Or, <a href="{{ url_for('admin_venue', key=key) }}">search again</a>.
+    Or, <a href="{{ url_for('admin_venue', edition=edition) }}">search again</a>.
   </p>
   {% include 'venueregform.html' %}
 {% endblock %}

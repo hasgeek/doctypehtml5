@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-  <form action="{{ url_for('admin_venue', key=key) }}" method="POST">
+  <form action="{{ url_for('admin_venue', edition=edition) }}" method="POST">
     <input type="hidden" name="_charset_"/>
     <input type="hidden" name="form.id" value="venueregconfirm"/>
     <input type="hidden" name="id" value="{{ p.id }}"/>
@@ -28,7 +28,7 @@
     <p>
       <input type="submit" value="That’s Me!"/>
     </p>
-    <p style="font-size: smaller;"><a href="{{ url_for('admin_venueform', key=key) }}">Not You?</a></p>
+    <p style="font-size: smaller;"><a href="{{ url_for('admin_venue', edition=edition) }}">Not You?</a></p>
   </form>
 {% endblock %}
 
