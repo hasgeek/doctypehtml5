@@ -509,8 +509,15 @@ def admin_stats(edition):
             present_brver['%s %s' % (ua.browser, ua.version.split('.')[0])] += 1
             present_platforms[ua.platform] += 1
 
-    f_all = 100.0 / c_all
-    f_present = 100.0 / c_present
+    if c_all != 0: # Avoid divide by zero situation
+        f_all = 100.0 / c_all
+    else:
+        f_all = 1
+
+    if c_present != 0: # Avoid divide by zero situation
+        f_present = 100.0 / c_present
+    else:
+        f_present = 1
 
     # Now make charts
     # All registrations
