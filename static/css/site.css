@@ -116,11 +116,20 @@ p.attribution {
     padding-top: 1px;
 }
 
-.schedule .dayslot .time, .playback {
+.schedule .dayslot .time,
+.schedule .dayslot .playback {
     float: right;
     margin-left: 0.5em;
     font-weight: bold;
     padding-top: 1px;
+}
+
+.schedule .dayslot .playback a,
+.schedule .dayslot .playback a:hover,
+.schedule .dayslot .playback a:active,
+.schedule .dayslot .playback a:visited {
+    border-bottom: 0;
+    text-decoration: none;
 }
 
 /* Logo type */

@@ -44,10 +44,12 @@ USER_CATEGORIES = [
 
 USER_CITIES = [
     ('', ''),
+    ('hyderabad', 'Hyderabad - January 23, 2011'),
+    ('ahmedabad', 'Ahmedabad - February 5, 2011'),
+    ('', '---'),
     ('bangalore', 'Bangalore - October 9, 2010 (over!)'),
     ('chennai', 'Chennai - November 27, 2010 (over!)'),
-    ('pune', 'Pune - December 4, 2010 (closed)'),
-    ('hyderabad', 'Hyderabad - January 22, 2011'),
+    ('pune', 'Pune - December 4, 2010 (over!)'),
     ]
 
 TSHIRT_SIZES = [
