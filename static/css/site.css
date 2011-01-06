@@ -121,6 +121,11 @@ p.attribution {
     padding-top: 1px;
 }
 
+.schedule .dayslot .playback {
+    height: 24px;
+    padding-top: 0;
+}
+
 .schedule .dayslot .playback a,
 .schedule .dayslot .playback a:hover,
 .schedule .dayslot .playback a:active,

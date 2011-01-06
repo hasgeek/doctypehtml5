@@ -246,7 +246,12 @@
       }).addClass('ui-tabs-vertical ui-helper-clearfix');
       // Activate sponsor tabs at bottom
       // No select handler for this
-      var sponsorTabs = $("#sponsor-tabs").tabs();
+      var sponsorTabs = $("#sponsor-tabs").tabs({
+        fx: {
+          height: "toggle",
+          duration: "fast",
+        }
+      });
       sponsorTabs.tabs('select', '#sponsors-hyderabad');
       $(".tabs-bottom .ui-tabs-nav, .tabs-bottom .ui-tabs-nav > *")
         .removeClass( "ui-corner-all ui-corner-top" )
