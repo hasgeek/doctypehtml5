@@ -4,8 +4,9 @@ Your registration for DocType HTML5 has been accepted. We look forward
 to seeing you at the event on January 23.
 
 The event will be hosted by the
-[International Institute of Information Technology][IIIT]. The
-website has been updated with [directions to the venue][Venue].
+[International Institute of Information Technology][IIIT], thanks to the
+support of the Pascal Lab and the Business Incubation Unit. The website
+has been updated with [directions to the venue][Venue].
 
 You may want to add this to your calendar via [iCal][],
 [Google Calendar][gCal], [Facebook][] or [LinkedIn][].
