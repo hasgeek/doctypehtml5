@@ -10,13 +10,13 @@ website has been updated with [directions to the venue][Venue].
 You may want to add this to your calendar via [iCal][],
 [Google Calendar][gCal], [Facebook][] or [LinkedIn][].
 
-We are pleased to announce that [Microsoft][], the platinum sponsor of the
-first edition, have decided to support us as the platinum sponsor once again.
-The new [Internet Explorer 9 beta][IE9] brings HTML5 support to the world's
-most widely deployed browser. We think you should check it out because this
-is the browser most of your users will have available by default. With IE9,
-every major browser is now HTML5-ready, so there's little reason to hold off
-switching to HTML5. This event will help you get started.
+We are pleased to announce that [Microsoft][] continues to support DocType
+HTML5 as the platinum sponsor. The new [Internet Explorer 9 beta][IE9]
+brings HTML5 support to the world's most widely deployed browser. We think
+you should check it out because this is the browser most of your users will
+have available by default. With IE9, every major browser is now HTML5-ready,
+so there's little reason to hold off switching to HTML5. This event will
+help you get started.
 
 ### Staying updated ###
 
