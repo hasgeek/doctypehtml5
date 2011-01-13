@@ -236,13 +236,16 @@
       }
       // Activate vertical sub-tabs
       var scheduleTabs = $("#schedule-tabs").tabs({
-        select: subtabselect
+        select: subtabselect,
       }).addClass('ui-tabs-vertical ui-helper-clearfix');
       var venueTabs = $("#venue-tabs").tabs({
-        select: subtabselect
+        select: subtabselect,
       }).addClass('ui-tabs-vertical ui-helper-clearfix');
       var galleryTabs = $("#gallery-tabs").tabs({
-        select: subtabselect
+        select: subtabselect,
+      }).addClass('ui-tabs-vertical ui-helper-clearfix');
+      var teamTabs = $("#team-tabs").tabs({
+        select: subtabselect,
       }).addClass('ui-tabs-vertical ui-helper-clearfix');
       // Activate sponsor tabs at bottom
       // No select handler for this
@@ -261,6 +264,7 @@
         schedule: scheduleTabs,
         venue: venueTabs,
         gallery: galleryTabs,
+        team: teamTabs,
       };
       // Fix CSS for tab display
       $(".ui-tabs").removeClass('ui-corner-all')
