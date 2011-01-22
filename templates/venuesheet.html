@@ -36,7 +36,7 @@
           <td>{{ i+1 }}</td>
           <td>{{ utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M')|e }}</td>
           <td><strong>{{ p.fullname|e }}</strong></td>
-          <td>{{ p.email|e }}</td>
+          <td>{{ hideemail.sub('...@', p.email)|e }}</td>
           <td>{{ p.company|e }}</td>
           <td>{{ p.jobtitle|e }}</td>
           <td>

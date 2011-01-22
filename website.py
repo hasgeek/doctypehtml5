@@ -10,6 +10,7 @@ from collections import defaultdict
 from datetime import datetime
 from uuid import uuid4
 from base64 import b64encode
+import re
 from flask import Flask, abort, request, render_template, redirect, url_for
 from flask import flash, session, g
 from werkzeug import generate_password_hash, check_password_hash, UserAgent
@@ -93,6 +94,8 @@ GALLERY_SECTIONS = [
     (u'Toolkits', u'toolkit'),
     (u'Showcase', u'showcase'),
     ]
+
+hideemail = re.compile('.{1,3}@')
 
 # ---------------------------------------------------------------------------
 # Utility functions
@@ -754,7 +757,7 @@ def admin_venuesheet(edition):
     if request.method == 'GET':
         tz = timezone(app.config['TIMEZONE'])
         return render_template('venuesheet.html', participants=Participant.query.order_by('fullname').filter_by(edition=edition),
-                               utc=utc, tz=tz, enumerate=enumerate, edition=edition)
+                               utc=utc, tz=tz, enumerate=enumerate, hideemail=hideemail, edition=edition)
     elif request.method == 'POST' and 'id' in request.form:
         # Register this participant id
         id = request.form['id']
