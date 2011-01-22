@@ -748,6 +748,29 @@ def admin_venue(edition):
             flash("Unknown form submission", 'error')
             return redirect(url_for('admin_venue', edition=edition), code=303)
 
+@app.route('/admin/venuesheet/<edition>', methods=['GET', 'POST'])
+@adminkey('ACCESSKEY_APPROVE')
+def admin_venuesheet(edition):
+    if request.method == 'GET':
+        tz = timezone(app.config['TIMEZONE'])
+        return render_template('venuesheet.html', participants=Participant.query.order_by('fullname').filter_by(edition=edition),
+                               utc=utc, tz=tz, enumerate=enumerate, edition=edition)
+    elif request.method == 'POST' and 'id' in request.form:
+        # Register this participant id
+        id = request.form['id']
+        p = Participant.query.get(id)
+        if not p.attended:
+            p.attended = True
+            p.attenddate = datetime.utcnow()
+            # XXX: makeuser does not add to MailChimp, to move folks along faster.
+            # MailChimp must be manually updated later.
+            makeuser(p)
+            db.session.commit()
+            return 'Signed in'
+        else:
+            return 'Already signed in'
+    else:
+        return 'Unknown form submission'
 
 # ---------------------------------------------------------------------------
 # Admin helper functions
@@ -829,4 +852,4 @@ if __name__ == '__main__':
     if MailChimp is None:
         import sys
         print >> sys.stderr, "greatape is not installed. MailChimp support will be disabled."
-    app.run('0.0.0.0', 8000, debug=True)
+    app.run('0.0.0.0', 4000, debug=True)
