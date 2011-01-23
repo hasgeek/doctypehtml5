@@ -504,7 +504,10 @@ def admin_stats(edition):
             c_all += 1
             ua = UserAgent(p.useragent)
             all_browsers[ua.browser] += 1
-            all_brver['%s %s' % (ua.browser, ua.version.split('.')[0])] += 1
+            if ua.version is None:
+                all_brver[ua.browser] += 1
+            else:
+                all_brver['%s %s' % (ua.browser, ua.version.split('.')[0])] += 1
             all_platforms[ua.platform] += 1
     for p in Participant.query.filter_by(edition=edition, attended=True):
         if p.useragent:
