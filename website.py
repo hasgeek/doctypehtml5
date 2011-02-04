@@ -45,12 +45,12 @@ USER_CATEGORIES = [
 
 USER_CITIES = [
     ('', ''),
-    ('hyderabad', 'Hyderabad - January 23, 2011 (closed!)'),
-    ('ahmedabad', 'Ahmedabad - February 5, 2011'),
+    ('ahmedabad', 'Ahmedabad - February 5, 2011 (closed!)'),
     ('', '---'),
     ('bangalore', 'Bangalore - October 9, 2010 (over!)'),
     ('chennai', 'Chennai - November 27, 2010 (over!)'),
     ('pune', 'Pune - December 4, 2010 (over!)'),
+    ('hyderabad', 'Hyderabad - January 23, 2011 (over!)'),
     ]
 
 TSHIRT_SIZES = [
@@ -241,7 +241,7 @@ class RegisterForm(Form):
                 raise ValidationError, "You can't register for that"
             else:
                 return # Register at venue even if public reg is closed
-        if field.data in [u'bangalore', u'chennai', u'pune', u'hyderabad']:
+        if field.data in [u'bangalore', u'chennai', u'pune', u'hyderabad', u'ahmedabad']:
             raise ValidationError, "Registrations are closed for this edition"
 
 
