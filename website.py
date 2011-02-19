@@ -12,7 +12,7 @@ from uuid import uuid4
 from base64 import b64encode
 import re
 from flask import Flask, abort, request, render_template, redirect, url_for
-from flask import flash, session, g
+from flask import flash, session, g, Response
 from werkzeug import generate_password_hash, check_password_hash, UserAgent
 from flaskext.sqlalchemy import SQLAlchemy
 from flaskext.mail import Mail, Message
@@ -288,12 +288,13 @@ def sitemap():
     """
     Return a sitemap. There is only one page for web crawlers.
     """
-    return """<?xml version="1.0" encoding="UTF-8"?>
+    return Response("""<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
        <url>
           <loc>http://%s%s</loc>
        </url>
-    </urlset>""" % (request.host, url_for('index'))
+    </urlset>""" % (request.host, url_for('index')),
+    content_type = 'text/xml; charset=utf-8')
 
 
 @app.route('/login')
