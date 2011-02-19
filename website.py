@@ -370,7 +370,9 @@ def favicon():
 @app.route('/robots.txt')
 def robots():
     # Disable support for indexing fragments, since there's no backing code
-    return "Disallow: /*_escaped_fragment_\n"
+    return Response("Sitemap: /sitemap.xml\n"\
+                    "Disallow: /*_escaped_fragment_\n",
+                    content_type = 'text/plain; charset=utf-8')
 
 
 # ---------------------------------------------------------------------------
