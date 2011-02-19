@@ -45,12 +45,11 @@ USER_CATEGORIES = [
 
 USER_CITIES = [
     ('', ''),
-    ('ahmedabad', 'Ahmedabad - February 5, 2011 (closed!)'),
-    ('', '---'),
     ('bangalore', 'Bangalore - October 9, 2010 (over!)'),
     ('chennai', 'Chennai - November 27, 2010 (over!)'),
     ('pune', 'Pune - December 4, 2010 (over!)'),
     ('hyderabad', 'Hyderabad - January 23, 2011 (over!)'),
+    ('ahmedabad', 'Ahmedabad - February 5, 2011 (over!)'),
     ]
 
 TSHIRT_SIZES = [
@@ -282,6 +281,19 @@ def index(**forms):
                            regform=regform,
                            loginform=loginform,
                            gallery_sections=GALLERY_SECTIONS)
+
+
+@app.route('/sitemap.xml')
+def sitemap():
+    """
+    Return a sitemap. There is only one page for web crawlers.
+    """
+    return """<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+       <url>
+          <loc>http://%s%s</loc>
+       </url>
+    </urlset>""" % (request.host, url_for('index'))
 
 
 @app.route('/login')

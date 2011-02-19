@@ -47,5 +47,6 @@ Why use a framework?
 --------------------
 
 The website is currently a single HTML page, so why use a framework at all?
-Because we intend to expand it. We might as well get a good foundation in place
-right at the beginning. Flask is lightweight and a joy to work with.
+Because there is also a sizeable backend that sends email and tracks responses
+from participants. This is not exposed to the UI, but you can see it here in
+the code.
