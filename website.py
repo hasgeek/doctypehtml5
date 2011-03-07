@@ -486,14 +486,14 @@ def admin_list(edition):
 @app.route('/admin/rsvp/<edition>', methods=['GET', 'POST'])
 @adminkey('ACCESSKEY_LIST')
 def admin_rsvp(edition):
-   rsvp_yes = Participant.query.filter_by(edition=edition, approved=True, rsvp='Y').count()
-   rsvp_no = Participant.query.filter_by(edition=edition, approved=True, rsvp='N').count()
-   rsvp_maybe = Participant.query.filter_by(edition=edition, approved=True, rsvp='M').count()
-   rsvp_awaiting = Participant.query.filter_by(edition=edition, approved=True, rsvp='A').count()
+    rsvp_yes = Participant.query.filter_by(edition=edition, approved=True, rsvp='Y').count()
+    rsvp_no = Participant.query.filter_by(edition=edition, approved=True, rsvp='N').count()
+    rsvp_maybe = Participant.query.filter_by(edition=edition, approved=True, rsvp='M').count()
+    rsvp_awaiting = Participant.query.filter_by(edition=edition, approved=True, rsvp='A').count()
 
-   return render_template('rsvp.html', yes=rsvp_yes, no=rsvp_no,
-                          maybe=rsvp_maybe, awaiting=rsvp_awaiting,
-                          title=u'RSVP Statistics')
+    return render_template('rsvp.html', yes=rsvp_yes, no=rsvp_no,
+                           maybe=rsvp_maybe, awaiting=rsvp_awaiting,
+                           title=u'RSVP Statistics')
 
 
 @app.route('/admin/stats/<edition>', methods=['GET', 'POST'])
