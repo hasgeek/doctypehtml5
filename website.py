@@ -374,6 +374,11 @@ def robots():
                     "Disallow: /*_escaped_fragment_\n",
                     content_type = 'text/plain; charset=utf-8')
 
+@app.route('/adsense')
+def adsense():
+    """Hidden page for Google AdSense application."""
+    return render_template('adsense.html')
+
 
 # ---------------------------------------------------------------------------
 # Form submission
