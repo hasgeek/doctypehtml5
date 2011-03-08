@@ -213,6 +213,20 @@
       </div>
     </div>
   </div>
+  {% if config['GOOGLE_AD_CLIENT'] %}
+    <!-- Google ads -->
+    <script type="text/javascript"><!--
+    google_ad_client = "{{ config['GOOGLE_AD_CLIENT'] }}";
+    /* Below footer */
+    google_ad_slot = "{{ config['GOOGLE_AD_SLOT'] }}";
+    google_ad_width = {{ config['GOOGLE_AD_WIDTH'] }};
+    google_ad_height = {{ config['GOOGLE_AD_HEIGHT'] }};
+    //-->
+    </script>
+    <script type="text/javascript"
+    src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+  {% endif %}
 {% endblock %}
 {% block footerscripts %}
   <script type="text/javascript">

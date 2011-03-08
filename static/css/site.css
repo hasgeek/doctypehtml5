@@ -534,3 +534,7 @@ table.listing {
     -moz-box-shadow: 0px 2px 5px #ccc;
     box-shadow: 0px 2px 5px #ccc;
 }
+
+#sponsor-tabs {
+    margin-bottom: 2em;
+}

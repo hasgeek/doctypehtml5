@@ -35,3 +35,8 @@ MAILCHIMP_LIST_ID = ''
 MAIL_FAIL_SILENTLY = False
 MAIL_SERVER = 'localhost'
 DEFAULT_MAIL_SENDER = ('DocType HTML5', 'test@example.com')
+#: Show Google Ads
+GOOGLE_AD_CLIENT = ''
+GOOGLE_AD_SLOT = ''
+GOOGLE_AD_WIDTH = 0
+GOOGLE_AD_HEIGHT = 0
