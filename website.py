@@ -28,7 +28,7 @@ except ImportError:
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
-mail = Mail(app)
+mail = Mail()
 
 # ---------------------------------------------------------------------------
 # Static data
@@ -871,6 +871,8 @@ except ImportError:
     print >> sys.stderr, "Please create a settings.py with the necessary settings. See settings-sample.py."
     print >> sys.stderr, "You may use the site without these settings, but some features may not work."
 
+# Initialize mail settings
+mail.init_app(app)
 # Create database table
 db.create_all()
 

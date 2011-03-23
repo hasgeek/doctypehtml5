@@ -26,7 +26,7 @@ setup the Python environment::
 
    mkdir -p ~/python/lib/python2.5/site-packages
    PYTHONPATH=~/python/lib/python2.5/site-packages easy_install --prefix ~/python virtualenv
-   PYTHONPATH=~/python/lib/python2.5/site-packages bin/virtualenv ~/python/env --no-site-packages
+   PYTHONPATH=~/python/lib/python2.5/site-packages ~/python/bin/virtualenv ~/python/env --no-site-packages
    source ~/python/env/bin/activate
    easy_install Flask Flask-SQLAlchemy Flask-WTF Flask-Mail simplejson pytz mysql-python greatape Markdown pygooglechart
 
