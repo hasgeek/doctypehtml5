@@ -2,9 +2,9 @@
 {% from 'macros.html' import ajaxform %}
 {% block title %}DocType HTML5{% endblock %}
 {% block header %}
-  <div id="date-location">
-    <strong>Next edition:<br/>Coimbatore</strong>
-  </div>
+{#-  <div id="date-location">
+    <strong>Next edition:<br/>none</strong>
+  </div> #}
   <h1><a href="{{ url_for('index') }}"><span class="brkt">&lt;</span><span class="bang">!</span><span itemprop="summary">DocType HTML<sup>5</sup></span><span class="domain">.in</span><span class="brkt">&gt;</span></a></h1>
 {% endblock %}
 {% block content %}
@@ -51,22 +51,12 @@
   </p>
   <div id="sponsor-tabs" class="tabs-bottom">
     <ul>
-      <li><a href="#sponsors-coimbatore">Coimbatore</a></li>
       <li><a href="#sponsors-bangalore">Bangalore</a></li>
       <li><a href="#sponsors-chennai">Chennai</a></li>
       <li><a href="#sponsors-pune">Pune</a></li>
       <li><a href="#sponsors-hyderabad">Hyderabad</a></li>
       <li><a href="#sponsors-ahmedabad">Ahmedabad</a></li>
     </ul>
-    <div id="sponsors-coimbatore">
-      <div class="tile">
-        <span class="title">Event By</span><br/>
-        <a href="http://hasgeek.com/">
-          <img src="{{ url_for('static', filename='img/logos/hasgeek.png') }}" width="70" height="70"
-              alt="HasGeek"/>
-        </a>
-      </div>
-    </div>
     <div id="sponsors-bangalore">
       <div class="tile">
         <span class="title">Platinum Sponsor</span><br/>

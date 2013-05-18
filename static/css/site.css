@@ -23,10 +23,14 @@ footer {
     margin: 2em auto;
 }
 
-#container {
+.container {
     max-width: 960px;
     margin-left: auto;
     margin-right: auto;
+    padding: 0 1em;
+}
+
+#container {
     padding: 1em;
     padding-top: 2em;
     margin-bottom: 0;

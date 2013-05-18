@@ -45,7 +45,6 @@ USER_CATEGORIES = [
 
 USER_CITIES = [
     ('', ''),
-    ('coimbatore', 'Coimbatore - To be announced'),
     ('bangalore', 'Bangalore - October 9, 2010 (over!)'),
     ('chennai', 'Chennai - November 27, 2010 (over!)'),
     ('pune', 'Pune - December 4, 2010 (over!)'),

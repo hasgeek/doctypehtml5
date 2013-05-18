@@ -48,7 +48,8 @@
 <!--[if IE 9 ]>    <body class="ie9"> <![endif]-->
 <!--[if gt IE 9]>  <body>             <![endif]-->
 <!--[if !IE]><!--> <body>         <!--<![endif]-->
-  <div id="container">
+  <div id="networkbar" data-siteid="events"></div>
+  <div id="container" class="container">
     <header>
       {%- for category, msg in get_flashed_messages(with_categories=true) %}
         <div class="flash flash-{{ category }}">{{ msg }}</div>
@@ -93,5 +94,6 @@
   });
 </script> -->
   {% block footerscripts %}{% endblock %}
+  <script src="https://api.hasgeek.com/1/networkbar/networkbar.js"></script>
 </body>
 </html>
