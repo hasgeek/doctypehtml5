@@ -14,10 +14,11 @@ import re
 from flask import Flask, abort, request, render_template, redirect, url_for
 from flask import flash, session, g, Response
 from werkzeug import generate_password_hash, check_password_hash, UserAgent
-from flaskext.sqlalchemy import SQLAlchemy
-from flaskext.mail import Mail, Message
-from flaskext.wtf import Form, TextField, TextAreaField, PasswordField
-from flaskext.wtf import SelectField, Required, Email, ValidationError
+from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.mail import Mail, Message
+from flask.ext.wtf import Form
+from wtforms import TextField, TextAreaField, PasswordField, SelectField
+from wtforms.validators import Required, Email, ValidationError
 from pytz import utc, timezone
 from markdown import markdown
 import pygooglechart
