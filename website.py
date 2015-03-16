@@ -54,7 +54,7 @@ USER_CITIES = [
     ]
 
 TSHIRT_SIZES = [
-    ('',  u''),
+    ('', u''),
     ('1', u'XS'),
     ('2', u'S'),
     ('3', u'M'),
@@ -65,17 +65,17 @@ TSHIRT_SIZES = [
     ]
 
 REFERRERS = [
-    ('',   u''),
-    ('1',  u'Twitter'),
-    ('2',  u'Facebook'),
-    ('3',  u'LinkedIn'),
+    ('', u''),
+    ('1', u'Twitter'),
+    ('2', u'Facebook'),
+    ('3', u'LinkedIn'),
     ('10', u'Discussion Group or List'),
-    ('4',  u'Google/Bing Search'),
-    ('5',  u'Google Buzz'),
-    ('6',  u'Blog'),
-    ('7',  u'Email/IM from Friend'),
-    ('8',  u'Colleague at Work'),
-    ('9',  u'Other'),
+    ('4', u'Google/Bing Search'),
+    ('5', u'Google Buzz'),
+    ('6', u'Blog'),
+    ('7', u'Email/IM from Friend'),
+    ('8', u'Colleague at Work'),
+    ('9', u'Other'),
     ]
 
 GALLERY_SECTIONS = [
@@ -96,6 +96,7 @@ GALLERY_SECTIONS = [
     ]
 
 hideemail = re.compile('.{1,3}@')
+
 
 # ---------------------------------------------------------------------------
 # Utility functions
@@ -238,11 +239,11 @@ class RegisterForm(Form):
     def validate_edition(self, field):
         if hasattr(self, '_venuereg'):
             if field.data != self._venuereg:
-                raise ValidationError, "You can't register for that"
+                raise ValidationError("You can't register for that")
             else:
-                return # Register at venue even if public reg is closed
+                return  # Register at venue even if public reg is closed
         if field.data in [u'bangalore', u'chennai', u'pune', u'hyderabad', u'ahmedabad']:
-            raise ValidationError, "Registrations are closed for this edition"
+            raise ValidationError("Registrations are closed for this edition")
 
 
 class AccessKeyForm(Form):
@@ -259,14 +260,14 @@ class LoginForm(Form):
     def validate_username(self, field):
         existing = self.getuser(field.data)
         if existing is None:
-            raise ValidationError, "No user account for that email address"
+            raise ValidationError("No user account for that email address")
         if not existing.active:
-            raise ValidationError, "This user account is disabled"
+            raise ValidationError("This user account is disabled")
 
     def validate_password(self, field):
         user = self.getuser(self.email.data)
         if user is None or not user.check_password(field.data):
-            raise ValidationError, "Incorrect password"
+            raise ValidationError("Incorrect password")
         self.user = user
 
 
@@ -295,7 +296,7 @@ def sitemap():
           <loc>http://%s%s</loc>
        </url>
     </urlset>""" % (request.host, url_for('index')),
-    content_type = 'text/xml; charset=utf-8')
+    content_type='text/xml; charset=utf-8')
 
 
 @app.route('/login')
@@ -354,9 +355,9 @@ def rsvp(edition):
         flash(u"You did not register for this edition, %s." % user.fullname, 'error')
         return redirect(url_for('index'), code=303)
     if choice == 'Y':
-        flash(u"Yay! So glad you will be joining us, %s." % user.fullname , 'info')
+        flash(u"Yay! So glad you will be joining us, %s." % user.fullname, 'info')
     elif choice == 'N':
-        flash(u"Sorry you can't make it, %s. Hope you’ll join us next time." % user.fullname, 'error') # Fake 'error' for frowny icon
+        flash(u"Sorry you can't make it, %s. Hope you’ll join us next time." % user.fullname, 'error')  # Fake 'error' for frowny icon
     elif choice == 'M':
         flash(u"We recorded you as Maybe Attending, %s. When you know better, could you select Yes or No?" % user.fullname, 'info')
     db.session.commit()
@@ -371,9 +372,10 @@ def favicon():
 @app.route('/robots.txt')
 def robots():
     # Disable support for indexing fragments, since there's no backing code
-    return Response("Sitemap: /sitemap.xml\n"\
+    return Response("Sitemap: /sitemap.xml\n"
                     "Disallow: /*_escaped_fragment_\n",
-                    content_type = 'text/plain; charset=utf-8')
+                    content_type='text/plain; charset=utf-8')
+
 
 @app.route('/adsense')
 def adsense():
@@ -450,7 +452,7 @@ def adminkey(keyname):
             if 'key' in request.values:
                 if request.values.get('key') in keylist:
                     session[keyname] = request.values['key']
-                    return redirect(request.base_url, code=303) # FIXME: Redirect to self URL
+                    return redirect(request.base_url, code=303)  # FIXME: Redirect to self URL
                 else:
                     flash("Invalid access key", 'error')
                     return render_template('accesskey.html', keyform=form)
@@ -466,8 +468,8 @@ def adminkey(keyname):
 @app.route('/admin/reasons/<edition>', methods=['GET', 'POST'])
 @adminkey('ACCESSKEY_REASONS')
 def admin_reasons(edition):
-    headers = [('no', u'Sl No'), ('reason', u'Reason')] # List of (key, label)
-    data = ({'no': i+1, 'reason': p.reason} for i, p in
+    headers = [('no', u'Sl No'), ('reason', u'Reason')]  # List of (key, label)
+    data = ({'no': i + 1, 'reason': p.reason} for i, p in
             enumerate(Participant.query.filter_by(edition=edition)))
     return render_template('datatable.html', headers=headers, data=data,
                            title=u'Reasons for attending')
@@ -479,7 +481,7 @@ def admin_list(edition):
     headers = [('no', u'Sl No'), ('name', u'Name'), ('company', u'Company'),
                ('jobtitle', u'Job Title'), ('twitter', 'Twitter'),
                ('approved', 'Approved'), ('rsvp', 'RSVP'), ('attended', 'Attended')]
-    data = ({'no': i+1, 'name': p.fullname, 'company': p.company,
+    data = ({'no': i + 1, 'name': p.fullname, 'company': p.company,
              'jobtitle': p.jobtitle,
              'twitter': p.twitter,
              'approved': p.approved,
@@ -488,6 +490,7 @@ def admin_list(edition):
              } for i, p in enumerate(Participant.query.order_by('fullname').filter_by(edition=edition)))
     return render_template('datatable.html', headers=headers, data=data,
                            title=u'List of participants')
+
 
 @app.route('/admin/rsvp/<edition>', methods=['GET', 'POST'])
 @adminkey('ACCESSKEY_LIST')
@@ -538,12 +541,12 @@ def admin_stats(edition):
             present_brver['%s %s' % (ua.browser, ua.version.split('.')[0])] += 1
             present_platforms[ua.platform] += 1
 
-    if c_all != 0: # Avoid divide by zero situation
+    if c_all != 0:  # Avoid divide by zero situation
         f_all = 100.0 / c_all
     else:
         f_all = 1
 
-    if c_present != 0: # Avoid divide by zero situation
+    if c_present != 0:  # Avoid divide by zero situation
         f_present = 100.0 / c_present
     else:
         f_present = 1
@@ -552,36 +555,36 @@ def admin_stats(edition):
     # All registrations
     c_all_browsers = pygooglechart.PieChart2D(CHART_X, CHART_Y)
     c_all_browsers.add_data(all_browsers.values())
-    c_all_browsers.set_pie_labels(['%s (%.2f%%)' % (key, all_browsers[key]*f_all) for key in all_browsers.keys()])
+    c_all_browsers.set_pie_labels(['%s (%.2f%%)' % (key, all_browsers[key] * f_all) for key in all_browsers.keys()])
 
     c_all_brver = pygooglechart.PieChart2D(CHART_X, CHART_Y)
     c_all_brver.add_data(all_brver.values())
-    c_all_brver.set_pie_labels(['%s (%.2f%%)' % (key, all_brver[key]*f_all) for key in all_brver.keys()])
+    c_all_brver.set_pie_labels(['%s (%.2f%%)' % (key, all_brver[key] * f_all) for key in all_brver.keys()])
 
     c_all_platforms = pygooglechart.PieChart2D(CHART_X, CHART_Y)
     c_all_platforms.add_data(all_platforms.values())
-    c_all_platforms.set_pie_labels(['%s (%.2f%%)' % (key, all_platforms[key]*f_all) for key in all_platforms.keys()])
+    c_all_platforms.set_pie_labels(['%s (%.2f%%)' % (key, all_platforms[key] * f_all) for key in all_platforms.keys()])
 
     # Present at venue
     c_present_browsers = pygooglechart.PieChart2D(CHART_X, CHART_Y)
     c_present_browsers.add_data(present_browsers.values())
-    c_present_browsers.set_pie_labels(['%s (%.2f%%)' % (key, present_browsers[key]*f_present) for key in present_browsers.keys()])
+    c_present_browsers.set_pie_labels(['%s (%.2f%%)' % (key, present_browsers[key] * f_present) for key in present_browsers.keys()])
 
     c_present_brver = pygooglechart.PieChart2D(CHART_X, CHART_Y)
     c_present_brver.add_data(present_brver.values())
-    c_present_brver.set_pie_labels(['%s (%.2f%%)' % (key, present_brver[key]*f_present) for key in present_brver.keys()])
+    c_present_brver.set_pie_labels(['%s (%.2f%%)' % (key, present_brver[key] * f_present) for key in present_brver.keys()])
 
     c_present_platforms = pygooglechart.PieChart2D(CHART_X, CHART_Y)
     c_present_platforms.add_data(present_platforms.values())
-    c_present_platforms.set_pie_labels(['%s (%.2f%%)' % (key, present_platforms[key]*f_present) for key in present_platforms.keys()])
+    c_present_platforms.set_pie_labels(['%s (%.2f%%)' % (key, present_platforms[key] * f_present) for key in present_platforms.keys()])
 
     return render_template('stats.html',
-                           all_browsers = c_all_browsers.get_url(),
-                           all_brver = c_all_brver.get_url(),
-                           all_platforms = c_all_platforms.get_url(),
-                           present_browsers = c_present_browsers.get_url(),
-                           present_brver = c_present_brver.get_url(),
-                           present_platforms = c_present_platforms.get_url()
+                           all_browsers=c_all_browsers.get_url(),
+                           all_brver=c_all_brver.get_url(),
+                           all_platforms=c_all_platforms.get_url(),
+                           present_browsers=c_present_browsers.get_url(),
+                           present_brver=c_present_brver.get_url(),
+                           present_platforms=c_present_platforms.get_url()
                            )
 
 
@@ -592,23 +595,23 @@ def admin_data(edition):
     d_referrer = dict(REFERRERS)
     d_category = dict(USER_CATEGORIES)
     tz = timezone(app.config['TIMEZONE'])
-    headers = [('no',       u'Sl No'),
-               ('regdate',  u'Date'),
-               ('name',     u'Name'),
-               ('email',    u'Email'),
-               ('company',  u'Company'),
+    headers = [('no', u'Sl No'),
+               ('regdate', u'Date'),
+               ('name', u'Name'),
+               ('email', u'Email'),
+               ('company', u'Company'),
                ('jobtitle', u'Job Title'),
-               ('twitter',  u'Twitter'),
-               ('tshirt',   u'T-shirt Size'),
+               ('twitter', u'Twitter'),
+               ('tshirt', u'T-shirt Size'),
                ('referrer', u'Referrer'),
                ('category', u'Category'),
-               ('ipaddr',   u'IP Address'),
+               ('ipaddr', u'IP Address'),
                ('approved', u'Approved'),
-               ('RSVP',     u'RSVP'),
-               ('agent',    u'User Agent'),
-               ('reason',   u'Reason'),
+               ('RSVP', u'RSVP'),
+               ('agent', u'User Agent'),
+               ('reason', u'Reason'),
                ]
-    data = ({'no': i+1,
+    data = ({'no': i + 1,
              'regdate': utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M'),
              'name': p.fullname,
              'email': p.email,
@@ -663,10 +666,10 @@ def admin_approve(edition):
                     mc = MailChimp(app.config['MAILCHIMP_API_KEY'])
                     try:
                         mc.listUnsubscribe(
-                            id = app.config['MAILCHIMP_LIST_ID'],
-                            email_address = p.email,
-                            send_goodbye = False,
-                            send_notify = False,
+                            id=app.config['MAILCHIMP_LIST_ID'],
+                            email_address=p.email,
+                            send_goodbye=False,
+                            send_notify=False,
                             )
                         pass
                     except MailChimpError, e:
@@ -683,7 +686,7 @@ def admin_approve(edition):
                             if other.user:
                                 dupe = True
                                 break
-                    if dupe == False:
+                    if dupe is False:
                         p.approved = True
                         status = "Tada!"
                         # 1. Make user account and activate it
@@ -695,7 +698,7 @@ def admin_approve(edition):
                             addmailchimp(mc, p)
                         # 3. Send notice of approval
                         msg = Message(subject="Your registration has been approved",
-                                      recipients = [p.email])
+                                      recipients=[p.email])
                         msg.body = render_template("approve_notice_%s.md" % edition, p=p)
                         msg.html = markdown(msg.body)
                         with app.open_resource("static/doctypehtml5-%s.ics" % edition) as ics:
@@ -719,7 +722,7 @@ def admin_approve(edition):
 def admin_venue(edition):
     if request.method == 'GET' and 'email' not in request.args:
         return render_template('venuereg.html', edition=edition)
-    elif request.method =='POST' or 'email' in request.args:
+    elif request.method == 'POST' or 'email' in request.args:
         if 'email' in request.args:
             formid = 'venueregemail'
         else:
@@ -729,7 +732,7 @@ def admin_venue(edition):
             if email:
                 p = Participant.query.filter_by(edition=edition, email=email).first()
                 if p is not None:
-                    if p.attended: # Already signed in
+                    if p.attended:  # Already signed in
                         flash("You have already signed in. Next person please.")
                         return redirect(url_for('admin_venue', edition=edition), code=303)
                     else:
@@ -775,6 +778,7 @@ def admin_venue(edition):
             flash("Unknown form submission", 'error')
             return redirect(url_for('admin_venue', edition=edition), code=303)
 
+
 @app.route('/admin/venuesheet/<edition>', methods=['GET', 'POST'])
 @adminkey('ACCESSKEY_APPROVE')
 def admin_venuesheet(edition):
@@ -798,6 +802,7 @@ def admin_venuesheet(edition):
             return 'Already signed in'
     else:
         return 'Unknown form submission'
+
 
 # ---------------------------------------------------------------------------
 # Admin helper functions
@@ -834,7 +839,7 @@ def _makeusers():
     for p in Participant.query.all():
         if p.approved:
             # Make user, but don't make account active
-            user = makeuser(p)
+            makeuser(p)
             if mc is not None:
                 addmailchimp(mc, p)
     db.session.commit()
@@ -847,17 +852,17 @@ def addmailchimp(mc, p):
     editions = [ap.edition for ap in p.user.participants if p.user]
     groups = {'Editions': {'name': 'Editions', 'groups': ','.join(editions)}}
     mc.listSubscribe(
-        id = app.config['MAILCHIMP_LIST_ID'],
-        email_address = p.email,
-        merge_vars = {'FULLNAME': p.fullname,
-                      'JOBTITLE': p.jobtitle,
-                      'COMPANY': p.company,
-                      'TWITTER': p.twitter,
-                      'PRIVATEKEY': p.user.privatekey,
-                      'UID': p.user.uid,
-                      'GROUPINGS': groups},
-        double_optin = False,
-        update_existing = True
+        id=app.config['MAILCHIMP_LIST_ID'],
+        email_address=p.email,
+        merge_vars={'FULLNAME': p.fullname,
+                    'JOBTITLE': p.jobtitle,
+                    'COMPANY': p.company,
+                    'TWITTER': p.twitter,
+                    'PRIVATEKEY': p.user.privatekey,
+                    'UID': p.user.uid,
+                    'GROUPINGS': groups},
+        double_optin=False,
+        update_existing=True
         )
 
 
