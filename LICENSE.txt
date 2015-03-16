@@ -3,7 +3,7 @@ individually licensed third-party libraries that are included with the source
 distribution. The licenses for these are specified within each file.
 
 For a list of contributors and their contributions, consult the version history
-at http://github.com/hasgeek/doctypehtml5.
+at https://github.com/hasgeek/doctypehtml5.
 
 Unless otherwise specified, all source code is licensed under the BSD license,
 the text of which is reproduced below and at

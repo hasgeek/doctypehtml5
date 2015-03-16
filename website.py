@@ -293,9 +293,9 @@ def sitemap():
     return Response("""<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
        <url>
-          <loc>http://%s%s</loc>
+          <loc>%s</loc>
        </url>
-    </urlset>""" % (request.host, url_for('index')),
+    </urlset>""" % url_for('index', _external=True),
     content_type='text/xml; charset=utf-8')
 
 
