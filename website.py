@@ -881,8 +881,11 @@ mail.init_app(app)
 # Create database table
 db.create_all()
 
+application = app
+
+
 if __name__ == '__main__':
     if MailChimp is None:
         import sys
         print >> sys.stderr, "greatape is not installed. MailChimp support will be disabled."
-    app.run('0.0.0.0', 4000, debug=True)
+    app.run('0.0.0.0', 4001, debug=True)
