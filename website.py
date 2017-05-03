@@ -16,8 +16,7 @@ from flask import flash, session, g, Response
 from werkzeug import generate_password_hash, check_password_hash, UserAgent
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.mail import Mail, Message
-from flask.ext.wtf import Form
-from wtforms import TextField, TextAreaField, PasswordField, SelectField
+from wtforms import Form, TextField, TextAreaField, PasswordField, SelectField
 from wtforms.validators import Required, Email, ValidationError
 from pytz import utc, timezone
 from markdown import markdown
