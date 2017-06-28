@@ -8,6 +8,7 @@ Website server for doctypehtml5.in
 from __future__ import with_statement
 from collections import defaultdict
 from datetime import datetime
+from flask_migrate import Migrate
 from uuid import uuid4
 from base64 import b64encode
 import re
@@ -21,13 +22,17 @@ from wtforms.validators import Required, Email, ValidationError
 from pytz import utc, timezone
 from markdown import markdown
 import pygooglechart
+from coaster.sqlalchemy import UuidMixin
+from sqlalchemy_utils.types import UUIDType
+import coaster.app
+from coaster.db import db
+
 try:
     from greatape import MailChimp, MailChimpError
 except ImportError:
     MailChimp = None
 
 app = Flask(__name__)
-db = SQLAlchemy(app)
 mail = Mail()
 
 # ---------------------------------------------------------------------------
@@ -97,7 +102,7 @@ GALLERY_SECTIONS = [
 hideemail = re.compile('.{1,3}@')
 
 
-# ---------------------------------------------------------------------------
+# ------------------------------tcha---------------------------------------------
 # Utility functions
 
 def newid():
@@ -183,7 +188,7 @@ class Participant(db.Model):
     user = db.relation('User', backref='participants')
 
 
-class User(db.Model):
+class User(UuidMixin, db.Model):
     """
     User account. This is different from :class:`Participant` because the email
     address here has been verified and is unique. The email address in
@@ -199,7 +204,7 @@ class User(db.Model):
     #: Private key, for first-time access without password
     privatekey = db.Column(db.String(22), nullable=False, unique=True, default=newid)
     #: Public UID; not clear what this could be used for
-    uid = db.Column(db.String(22), nullable=False, unique=True, default=newid)
+    uid = db.synonym('uuid')
     #: Password hash
     pw_hash = db.Column(db.String(80))
     #: Is this account active?
@@ -868,6 +873,11 @@ def addmailchimp(mc, p):
 # ---------------------------------------------------------------------------
 # Config and startup
 
+coaster.app.init_app(app)
+db.init_app(app)
+db.app = app
+migrate = Migrate(app, db)
+
 app.config.from_object(__name__)
 try:
     app.config.from_object('settings')
@@ -878,8 +888,6 @@ except ImportError:
 
 # Initialize mail settings
 mail.init_app(app)
-# Create database table
-db.create_all()
 
 application = app
 
