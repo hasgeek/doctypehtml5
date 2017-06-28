@@ -21,7 +21,9 @@ branch_labels = None
 depends_on = None
 
 
-user_table = table('user', column('uid', sa.String(22)), column('uuid', sqlalchemy_utils.types.uuid.UUIDType(binary=False)))
+user_table = table('user', column('id', sa.Integer()),
+    column('uid', sa.String(22)),
+    column('uuid', sqlalchemy_utils.types.uuid.UUIDType(binary=False)))
 
 conn = op.get_bind()
 
@@ -47,15 +49,15 @@ def get_progressbar(label, maxval):
 def upgrade():
     op.add_column('user', sa.Column('uuid', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=True))
     op.create_unique_constraint('user_uuid_key', 'user', ['uuid'])
-    users = conn.execute(sa.select([user_table.c.uid, user_table.c.uuid]))
+    users = conn.execute(sa.select([user_table.c.id, user_table.c.uid, user_table.c.uuid]))
 
     count = conn.scalar(sa.select([sa.func.count('*')]).select_from(user_table))
-    progress = get_progressbar('User', count)
+    progress = get_progressbar("User", count)
     progress.start()
 
     for counter, user in enumerate(users):
         conn.execute(sa.update(
-            user_table).where(user_table.c.uid == user.uid).values(uuid=b64_to_uuid(user.uid)))
+            user_table).where(user_table.c.id == user.id).values(uuid=b64_to_uuid(user.uid)))
         progress.update(counter)
     progress.finish()
     op.alter_column('user', 'uuid',
@@ -68,15 +70,15 @@ def downgrade():
     op.add_column('user', sa.Column('uid', sa.VARCHAR(length=22), autoincrement=False, nullable=True))
     op.drop_constraint('user_uuid_key', 'user', type_='unique')
     op.create_unique_constraint(u'user_uid_key', 'user', ['uid'])
-    users = conn.execute(sa.select([user_table.c.uid, user_table.c.uuid]))
+    users = conn.execute(sa.select([user_table.c.id, user_table.c.uid, user_table.c.uuid]))
 
     count = conn.scalar(sa.select([sa.func.count('*')]).select_from(user_table))
-    progress = get_progressbar('User', count)
+    progress = get_progressbar("User", count)
     progress.start()
 
     for counter, user in enumerate(users):
         conn.execute(sa.update(
-            user_table).where(user_table.c.uuid == user.uuid).values(uid=uuid_to_b64(user.uuid)))
+            user_table).where(user_table.c.id == user.id).values(uid=uuid_to_b64(user.uuid)))
         progress.update(counter)
     progress.finish()
 
