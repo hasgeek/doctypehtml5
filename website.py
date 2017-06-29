@@ -203,8 +203,6 @@ class User(UuidMixin, db.Model):
     email = db.Column(db.Unicode(80), nullable=False, unique=True)
     #: Private key, for first-time access without password
     privatekey = db.Column(db.String(22), nullable=False, unique=True, default=newid)
-    #: Public UID; not clear what this could be used for
-    uid = db.synonym('uuid')
     #: Password hash
     pw_hash = db.Column(db.String(80))
     #: Is this account active?
@@ -827,7 +825,6 @@ def makeuser(participant):
             # These defaults don't get auto-added until the session is committed,
             # but we need them before, so we have to manually assign values here.
             user.privatekey = newid()
-            user.uid = newid()
             db.session.add(user)
     return user
 
@@ -863,7 +860,7 @@ def addmailchimp(mc, p):
                     'COMPANY': p.company,
                     'TWITTER': p.twitter,
                     'PRIVATEKEY': p.user.privatekey,
-                    'UID': p.user.uid,
+                    'UUID': p.user.uuid,
                     'GROUPINGS': groups},
         double_optin=False,
         update_existing=True
