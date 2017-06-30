@@ -860,7 +860,7 @@ def addmailchimp(mc, p):
                     'COMPANY': p.company,
                     'TWITTER': p.twitter,
                     'PRIVATEKEY': p.user.privatekey,
-                    'UUID': p.user.uuid,
+                    'UID': p.user.buid,
                     'GROUPINGS': groups},
         double_optin=False,
         update_existing=True
