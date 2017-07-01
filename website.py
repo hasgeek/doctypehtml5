@@ -8,6 +8,7 @@ Website server for doctypehtml5.in
 from __future__ import with_statement
 from collections import defaultdict
 from datetime import datetime
+from flask_migrate import Migrate
 from uuid import uuid4
 from base64 import b64encode
 import re
@@ -21,13 +22,18 @@ from wtforms.validators import Required, Email, ValidationError
 from pytz import utc, timezone
 from markdown import markdown
 import pygooglechart
+from coaster.sqlalchemy import UuidMixin
+from sqlalchemy_utils.types import UUIDType
+import coaster.app
+from coaster.db import db
+from coaster.utils import buid
+
 try:
     from greatape import MailChimp, MailChimpError
 except ImportError:
     MailChimp = None
 
 app = Flask(__name__)
-db = SQLAlchemy(app)
 mail = Mail()
 
 # ---------------------------------------------------------------------------
@@ -97,15 +103,8 @@ GALLERY_SECTIONS = [
 hideemail = re.compile('.{1,3}@')
 
 
-# ---------------------------------------------------------------------------
+# -------------------------------------------------------------------------
 # Utility functions
-
-def newid():
-    """
-    Return a new random id that is exactly 22 characters long.
-    """
-    return b64encode(uuid4().bytes, altchars=',-').replace('=', '')
-
 
 def currentuser():
     """
@@ -183,7 +182,7 @@ class Participant(db.Model):
     user = db.relation('User', backref='participants')
 
 
-class User(db.Model):
+class User(UuidMixin, db.Model):
     """
     User account. This is different from :class:`Participant` because the email
     address here has been verified and is unique. The email address in
@@ -197,9 +196,7 @@ class User(db.Model):
     #: Email id (repeated from participant.email, but unique here)
     email = db.Column(db.Unicode(80), nullable=False, unique=True)
     #: Private key, for first-time access without password
-    privatekey = db.Column(db.String(22), nullable=False, unique=True, default=newid)
-    #: Public UID; not clear what this could be used for
-    uid = db.Column(db.String(22), nullable=False, unique=True, default=newid)
+    privatekey = db.Column(db.String(22), nullable=False, unique=True, default=buid)
     #: Password hash
     pw_hash = db.Column(db.String(80))
     #: Is this account active?
@@ -821,8 +818,7 @@ def makeuser(participant):
             participant.user = user
             # These defaults don't get auto-added until the session is committed,
             # but we need them before, so we have to manually assign values here.
-            user.privatekey = newid()
-            user.uid = newid()
+            user.privatekey = buid()
             db.session.add(user)
     return user
 
@@ -858,7 +854,7 @@ def addmailchimp(mc, p):
                     'COMPANY': p.company,
                     'TWITTER': p.twitter,
                     'PRIVATEKEY': p.user.privatekey,
-                    'UID': p.user.uid,
+                    'UID': p.user.buid,
                     'GROUPINGS': groups},
         double_optin=False,
         update_existing=True
@@ -867,6 +863,11 @@ def addmailchimp(mc, p):
 
 # ---------------------------------------------------------------------------
 # Config and startup
+
+coaster.app.init_app(app)
+db.init_app(app)
+db.app = app
+migrate = Migrate(app, db)
 
 app.config.from_object(__name__)
 try:
@@ -878,8 +879,6 @@ except ImportError:
 
 # Initialize mail settings
 mail.init_app(app)
-# Create database table
-db.create_all()
 
 application = app
 
