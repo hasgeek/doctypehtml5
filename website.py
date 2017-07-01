@@ -26,6 +26,7 @@ from coaster.sqlalchemy import UuidMixin
 from sqlalchemy_utils.types import UUIDType
 import coaster.app
 from coaster.db import db
+from coaster.utils import buid
 
 try:
     from greatape import MailChimp, MailChimpError
@@ -104,13 +105,6 @@ hideemail = re.compile('.{1,3}@')
 
 # -------------------------------------------------------------------------
 # Utility functions
-
-def newid():
-    """
-    Return a new random id that is exactly 22 characters long.
-    """
-    return b64encode(uuid4().bytes, altchars=',-').replace('=', '')
-
 
 def currentuser():
     """
@@ -202,7 +196,7 @@ class User(UuidMixin, db.Model):
     #: Email id (repeated from participant.email, but unique here)
     email = db.Column(db.Unicode(80), nullable=False, unique=True)
     #: Private key, for first-time access without password
-    privatekey = db.Column(db.String(22), nullable=False, unique=True, default=newid)
+    privatekey = db.Column(db.String(22), nullable=False, unique=True, default=buid)
     #: Password hash
     pw_hash = db.Column(db.String(80))
     #: Is this account active?
@@ -824,7 +818,7 @@ def makeuser(participant):
             participant.user = user
             # These defaults don't get auto-added until the session is committed,
             # but we need them before, so we have to manually assign values here.
-            user.privatekey = newid()
+            user.privatekey = buid()
             db.session.add(user)
     return user
 
