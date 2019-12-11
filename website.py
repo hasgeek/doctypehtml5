@@ -379,6 +379,14 @@ def adsense():
     return render_template('adsense.html')
 
 
+@app.route('/ads.txt')
+def adstxt():
+    """Render Google ads.txt"""
+    return Response(
+        "google.com, pub-7680461523383072, DIRECT, f08c47fec0942fa0\n",
+        content_type='text/plain; charset=utf-8')
+
+
 # ---------------------------------------------------------------------------
 # Form submission
 
