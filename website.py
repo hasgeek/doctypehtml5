@@ -14,7 +14,8 @@ from base64 import b64encode
 import re
 from flask import Flask, abort, request, render_template, redirect, url_for
 from flask import flash, session, g, Response
-from werkzeug import generate_password_hash, check_password_hash, UserAgent
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.useragents import UserAgent
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from wtforms import Form, TextField, TextAreaField, PasswordField, SelectField
