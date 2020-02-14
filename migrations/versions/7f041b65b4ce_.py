@@ -69,7 +69,7 @@ def upgrade():
 def downgrade():
     op.add_column('user', sa.Column('uid', sa.VARCHAR(length=22), autoincrement=False, nullable=True))
     op.drop_constraint('user_uuid_key', 'user', type_='unique')
-    op.create_unique_constraint(u'user_uid_key', 'user', ['uid'])
+    op.create_unique_constraint('user_uid_key', 'user', ['uid'])
     users = conn.execute(sa.select([user_table.c.id, user_table.c.uid, user_table.c.uuid]))
 
     count = conn.scalar(sa.select([sa.func.count('*')]).select_from(user_table))

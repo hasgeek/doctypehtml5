@@ -5,26 +5,22 @@
 Website server for doctypehtml5.in
 """
 
-from __future__ import with_statement
+
 from collections import defaultdict
 from datetime import datetime
 from flask_migrate import Migrate
-from uuid import uuid4
-from base64 import b64encode
 import re
 from flask import Flask, abort, request, render_template, redirect, url_for
 from flask import flash, session, g, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.useragents import UserAgent
-from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from wtforms import Form, TextField, TextAreaField, PasswordField, SelectField
-from wtforms.validators import Required, Email, ValidationError
+from wtforms.validators import DataRequired, Email, ValidationError
 from pytz import utc, timezone
 from markdown import markdown
 import pygooglechart
 from coaster.sqlalchemy import UuidMixin
-from sqlalchemy_utils.types import UUIDType
 import coaster.app
 from coaster.db import db
 from coaster.utils import buid
@@ -41,13 +37,13 @@ mail = Mail()
 # Static data
 
 USER_CATEGORIES = [
-    ('0', u'Unclassified'),
-    ('1', u'Student or Trainee'),
-    ('2', u'Developer'),
-    ('3', u'Designer'),
-    ('4', u'Manager, Senior Developer/Designer'),
-    ('5', u'CTO, CIO, CEO'),
-    ('6', u'Entrepreneur'),
+    ('0', 'Unclassified'),
+    ('1', 'Student or Trainee'),
+    ('2', 'Developer'),
+    ('3', 'Designer'),
+    ('4', 'Manager, Senior Developer/Designer'),
+    ('5', 'CTO, CIO, CEO'),
+    ('6', 'Entrepreneur'),
     ]
 
 USER_CITIES = [
@@ -60,45 +56,45 @@ USER_CITIES = [
     ]
 
 TSHIRT_SIZES = [
-    ('', u''),
-    ('1', u'XS'),
-    ('2', u'S'),
-    ('3', u'M'),
-    ('4', u'L'),
-    ('5', u'XL'),
-    ('6', u'XXL'),
-    ('7', u'XXXL'),
+    ('', ''),
+    ('1', 'XS'),
+    ('2', 'S'),
+    ('3', 'M'),
+    ('4', 'L'),
+    ('5', 'XL'),
+    ('6', 'XXL'),
+    ('7', 'XXXL'),
     ]
 
 REFERRERS = [
-    ('', u''),
-    ('1', u'Twitter'),
-    ('2', u'Facebook'),
-    ('3', u'LinkedIn'),
-    ('10', u'Discussion Group or List'),
-    ('4', u'Google/Bing Search'),
-    ('5', u'Google Buzz'),
-    ('6', u'Blog'),
-    ('7', u'Email/IM from Friend'),
-    ('8', u'Colleague at Work'),
-    ('9', u'Other'),
+    ('', ''),
+    ('1', 'Twitter'),
+    ('2', 'Facebook'),
+    ('3', 'LinkedIn'),
+    ('10', 'Discussion Group or List'),
+    ('4', 'Google/Bing Search'),
+    ('5', 'Google Buzz'),
+    ('6', 'Blog'),
+    ('7', 'Email/IM from Friend'),
+    ('8', 'Colleague at Work'),
+    ('9', 'Other'),
     ]
 
 GALLERY_SECTIONS = [
-    (u'Basics', u'basics'),
-    (u'Business', u'biz'),
-    (u'Accessibility', u'accessibility'),
-    (u'Typography', u'typography'),
-    (u'CSS3', u'css'),
-    (u'Audio', u'audio'),
-    (u'Video', u'video'),
-    (u'Canvas', u'canvas'),
-    (u'Vector Graphics', u'svg'),
-    (u'Geolocation', u'geolocation'),
-    (u'Mobile', u'mobile'),
-    (u'Websockets', u'websockets'),
-    (u'Toolkits', u'toolkit'),
-    (u'Showcase', u'showcase'),
+    ('Basics', 'basics'),
+    ('Business', 'biz'),
+    ('Accessibility', 'accessibility'),
+    ('Typography', 'typography'),
+    ('CSS3', 'css'),
+    ('Audio', 'audio'),
+    ('Video', 'video'),
+    ('Canvas', 'canvas'),
+    ('Vector Graphics', 'svg'),
+    ('Geolocation', 'geolocation'),
+    ('Mobile', 'mobile'),
+    ('Websockets', 'websockets'),
+    ('Toolkits', 'toolkit'),
+    ('Showcase', 'showcase'),
     ]
 
 hideemail = re.compile('.{1,3}@')
@@ -170,7 +166,7 @@ class Participant(db.Model):
     #: Y = Yes, Attending
     #: M = Maybe Attending
     #: N = Not Attending
-    rsvp = db.Column(db.Unicode(1), default=u'A', nullable=False)
+    rsvp = db.Column(db.Unicode(1), default='A', nullable=False)
     #: Did the participant attend the event?
     attended = db.Column(db.Boolean, default=False, nullable=False)
     #: Datetime the participant showed up
@@ -223,15 +219,15 @@ class User(UuidMixin, db.Model):
 
 
 class RegisterForm(Form):
-    fullname = TextField('Full name', validators=[Required()])
-    email = TextField('Email address', validators=[Required(), Email()])
-    edition = SelectField('Edition', validators=[Required()], choices=USER_CITIES)
-    company = TextField('Company name (or school/college)', validators=[Required()])
-    jobtitle = TextField('Job title', validators=[Required()])
+    fullname = TextField('Full name', validators=[DataRequired()])
+    email = TextField('Email address', validators=[DataRequired(), Email()])
+    edition = SelectField('Edition', validators=[DataRequired()], choices=USER_CITIES)
+    company = TextField('Company name (or school/college)', validators=[DataRequired()])
+    jobtitle = TextField('Job title', validators=[DataRequired()])
     twitter = TextField('Twitter id (optional)')
-    tshirtsize = SelectField('T-shirt size', validators=[Required()], choices=TSHIRT_SIZES)
-    referrer = SelectField('How did you hear about this event?', validators=[Required()], choices=REFERRERS)
-    reason = TextAreaField('Your reasons for attending', validators=[Required()])
+    tshirtsize = SelectField('T-shirt size', validators=[DataRequired()], choices=TSHIRT_SIZES)
+    referrer = SelectField('How did you hear about this event?', validators=[DataRequired()], choices=REFERRERS)
+    reason = TextAreaField('Your reasons for attending', validators=[DataRequired()])
 
     def validate_edition(self, field):
         if hasattr(self, '_venuereg'):
@@ -239,17 +235,17 @@ class RegisterForm(Form):
                 raise ValidationError("You can't register for that")
             else:
                 return  # Register at venue even if public reg is closed
-        if field.data in [u'bangalore', u'chennai', u'pune', u'hyderabad', u'ahmedabad']:
+        if field.data in ['bangalore', 'chennai', 'pune', 'hyderabad', 'ahmedabad']:
             raise ValidationError("Registrations are closed for this edition")
 
 
 class AccessKeyForm(Form):
-    key = PasswordField('Access Key', validators=[Required()])
+    key = PasswordField('Access Key', validators=[DataRequired()])
 
 
 class LoginForm(Form):
-    email = TextField('Email address', validators=[Required(), Email()])
-    password = PasswordField('Password', validators=[Required()])
+    email = TextField('Email address', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
 
     def getuser(self, name):
         return User.query.filter_by(email=name).first()
@@ -336,27 +332,27 @@ def rsvp(edition):
     key = request.args.get('key')
     choice = request.args.get('rsvp')
     if key is None:
-        flash(u"You need an access key to RSVP.", 'error')
+        flash("You need an access key to RSVP.", 'error')
         return redirect(url_for('index'), code=303)
     if choice not in ['Y', 'N', 'M']:
-        flash(u"You need to RSVP with Yes, No or Maybe: Y, N or M.", 'error')
+        flash("You need to RSVP with Yes, No or Maybe: Y, N or M.", 'error')
         return redirect(url_for('index'), code=303)
     user = User.query.filter_by(privatekey=key).first()
     if user is None:
-        flash(u"Sorry, that access key is not in our records.", 'error')
+        flash("Sorry, that access key is not in our records.", 'error')
         return redirect(url_for('index'), code=303)
     participant = Participant.query.filter_by(user=user, edition=edition).first()
     if participant:
         participant.rsvp = choice
     else:
-        flash(u"You did not register for this edition, %s." % user.fullname, 'error')
+        flash("You did not register for this edition, %s." % user.fullname, 'error')
         return redirect(url_for('index'), code=303)
     if choice == 'Y':
-        flash(u"Yay! So glad you will be joining us, %s." % user.fullname, 'info')
+        flash("Yay! So glad you will be joining us, %s." % user.fullname, 'info')
     elif choice == 'N':
-        flash(u"Sorry you can't make it, %s. Hope you’ll join us next time." % user.fullname, 'error')  # Fake 'error' for frowny icon
+        flash("Sorry you can't make it, %s. Hope you’ll join us next time." % user.fullname, 'error')  # Fake 'error' for frowny icon
     elif choice == 'M':
-        flash(u"We recorded you as Maybe Attending, %s. When you know better, could you select Yes or No?" % user.fullname, 'info')
+        flash("We recorded you as Maybe Attending, %s. When you know better, could you select Yes or No?" % user.fullname, 'info')
     db.session.commit()
     return redirect(url_for('index'), code=303)
 
@@ -473,18 +469,18 @@ def adminkey(keyname):
 @app.route('/admin/reasons/<edition>', methods=['GET', 'POST'])
 @adminkey('ACCESSKEY_REASONS')
 def admin_reasons(edition):
-    headers = [('no', u'Sl No'), ('reason', u'Reason')]  # List of (key, label)
+    headers = [('no', 'Sl No'), ('reason', 'Reason')]  # List of (key, label)
     data = ({'no': i + 1, 'reason': p.reason} for i, p in
             enumerate(Participant.query.filter_by(edition=edition)))
     return render_template('datatable.html', headers=headers, data=data,
-                           title=u'Reasons for attending')
+                           title='Reasons for attending')
 
 
 @app.route('/admin/list/<edition>', methods=['GET', 'POST'])
 @adminkey('ACCESSKEY_LIST')
 def admin_list(edition):
-    headers = [('no', u'Sl No'), ('name', u'Name'), ('company', u'Company'),
-               ('jobtitle', u'Job Title'), ('twitter', 'Twitter'),
+    headers = [('no', 'Sl No'), ('name', 'Name'), ('company', 'Company'),
+               ('jobtitle', 'Job Title'), ('twitter', 'Twitter'),
                ('approved', 'Approved'), ('rsvp', 'RSVP'), ('attended', 'Attended')]
     data = ({'no': i + 1, 'name': p.fullname, 'company': p.company,
              'jobtitle': p.jobtitle,
@@ -494,7 +490,7 @@ def admin_list(edition):
              'attended': ['No', 'Yes'][p.attended]
              } for i, p in enumerate(Participant.query.order_by('fullname').filter_by(edition=edition)))
     return render_template('datatable.html', headers=headers, data=data,
-                           title=u'List of participants')
+                           title='List of participants')
 
 
 @app.route('/admin/rsvp/<edition>', methods=['GET', 'POST'])
@@ -507,7 +503,7 @@ def admin_rsvp(edition):
 
     return render_template('rsvp.html', yes=rsvp_yes, no=rsvp_no,
                            maybe=rsvp_maybe, awaiting=rsvp_awaiting,
-                           title=u'RSVP Statistics')
+                           title='RSVP Statistics')
 
 
 @app.route('/admin/stats/<edition>', methods=['GET', 'POST'])
@@ -559,29 +555,29 @@ def admin_stats(edition):
     # Now make charts
     # All registrations
     c_all_browsers = pygooglechart.PieChart2D(CHART_X, CHART_Y)
-    c_all_browsers.add_data(all_browsers.values())
-    c_all_browsers.set_pie_labels(['%s (%.2f%%)' % (key, all_browsers[key] * f_all) for key in all_browsers.keys()])
+    c_all_browsers.add_data(list(all_browsers.values()))
+    c_all_browsers.set_pie_labels(['%s (%.2f%%)' % (key, all_browsers[key] * f_all) for key in list(all_browsers.keys())])
 
     c_all_brver = pygooglechart.PieChart2D(CHART_X, CHART_Y)
-    c_all_brver.add_data(all_brver.values())
-    c_all_brver.set_pie_labels(['%s (%.2f%%)' % (key, all_brver[key] * f_all) for key in all_brver.keys()])
+    c_all_brver.add_data(list(all_brver.values()))
+    c_all_brver.set_pie_labels(['%s (%.2f%%)' % (key, all_brver[key] * f_all) for key in list(all_brver.keys())])
 
     c_all_platforms = pygooglechart.PieChart2D(CHART_X, CHART_Y)
-    c_all_platforms.add_data(all_platforms.values())
-    c_all_platforms.set_pie_labels(['%s (%.2f%%)' % (key, all_platforms[key] * f_all) for key in all_platforms.keys()])
+    c_all_platforms.add_data(list(all_platforms.values()))
+    c_all_platforms.set_pie_labels(['%s (%.2f%%)' % (key, all_platforms[key] * f_all) for key in list(all_platforms.keys())])
 
     # Present at venue
     c_present_browsers = pygooglechart.PieChart2D(CHART_X, CHART_Y)
-    c_present_browsers.add_data(present_browsers.values())
-    c_present_browsers.set_pie_labels(['%s (%.2f%%)' % (key, present_browsers[key] * f_present) for key in present_browsers.keys()])
+    c_present_browsers.add_data(list(present_browsers.values()))
+    c_present_browsers.set_pie_labels(['%s (%.2f%%)' % (key, present_browsers[key] * f_present) for key in list(present_browsers.keys())])
 
     c_present_brver = pygooglechart.PieChart2D(CHART_X, CHART_Y)
-    c_present_brver.add_data(present_brver.values())
-    c_present_brver.set_pie_labels(['%s (%.2f%%)' % (key, present_brver[key] * f_present) for key in present_brver.keys()])
+    c_present_brver.add_data(list(present_brver.values()))
+    c_present_brver.set_pie_labels(['%s (%.2f%%)' % (key, present_brver[key] * f_present) for key in list(present_brver.keys())])
 
     c_present_platforms = pygooglechart.PieChart2D(CHART_X, CHART_Y)
-    c_present_platforms.add_data(present_platforms.values())
-    c_present_platforms.set_pie_labels(['%s (%.2f%%)' % (key, present_platforms[key] * f_present) for key in present_platforms.keys()])
+    c_present_platforms.add_data(list(present_platforms.values()))
+    c_present_platforms.set_pie_labels(['%s (%.2f%%)' % (key, present_platforms[key] * f_present) for key in list(present_platforms.keys())])
 
     return render_template('stats.html',
                            all_browsers=c_all_browsers.get_url(),
@@ -600,21 +596,21 @@ def admin_data(edition):
     d_referrer = dict(REFERRERS)
     d_category = dict(USER_CATEGORIES)
     tz = timezone(app.config['TIMEZONE'])
-    headers = [('no', u'Sl No'),
-               ('regdate', u'Date'),
-               ('name', u'Name'),
-               ('email', u'Email'),
-               ('company', u'Company'),
-               ('jobtitle', u'Job Title'),
-               ('twitter', u'Twitter'),
-               ('tshirt', u'T-shirt Size'),
-               ('referrer', u'Referrer'),
-               ('category', u'Category'),
-               ('ipaddr', u'IP Address'),
-               ('approved', u'Approved'),
-               ('RSVP', u'RSVP'),
-               ('agent', u'User Agent'),
-               ('reason', u'Reason'),
+    headers = [('no', 'Sl No'),
+               ('regdate', 'Date'),
+               ('name', 'Name'),
+               ('email', 'Email'),
+               ('company', 'Company'),
+               ('jobtitle', 'Job Title'),
+               ('twitter', 'Twitter'),
+               ('tshirt', 'T-shirt Size'),
+               ('referrer', 'Referrer'),
+               ('category', 'Category'),
+               ('ipaddr', 'IP Address'),
+               ('approved', 'Approved'),
+               ('RSVP', 'RSVP'),
+               ('agent', 'User Agent'),
+               ('reason', 'Reason'),
                ]
     data = ({'no': i + 1,
              'regdate': utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M'),
@@ -628,12 +624,12 @@ def admin_data(edition):
              'category': d_category.get(str(p.category), p.category),
              'ipaddr': p.ipaddr,
              'approved': {True: 'Yes', False: 'No'}[p.approved],
-             'rsvp': {'A': u'', 'Y': u'Yes', 'M': u'Maybe', 'N': u'No'}[p.rsvp],
+             'rsvp': {'A': '', 'Y': 'Yes', 'M': 'Maybe', 'N': 'No'}[p.rsvp],
              'agent': p.useragent,
              'reason': p.reason,
              } for i, p in enumerate(Participant.query.filter_by(edition=edition)))
     return render_template('datatable.html', headers=headers, data=data,
-                           title=u'Participant data')
+                           title='Participant data')
 
 
 @app.route('/admin/classify/<edition>', methods=['GET', 'POST'])
@@ -677,7 +673,7 @@ def admin_approve(edition):
                             send_notify=False,
                             )
                         pass
-                    except MailChimpError, e:
+                    except MailChimpError as e:
                         status = e.msg
                 db.session.commit()
             elif 'action.approve' in request.form:
@@ -883,8 +879,8 @@ try:
     app.config.from_object('settings')
 except ImportError:
     import sys
-    print >> sys.stderr, "Please create a settings.py with the necessary settings. See settings-sample.py."
-    print >> sys.stderr, "You may use the site without these settings, but some features may not work."
+    print("Please create a settings.py with the necessary settings. See settings-sample.py.", file=sys.stderr)
+    print("You may use the site without these settings, but some features may not work.", file=sys.stderr)
 
 # Initialize mail settings
 mail.init_app(app)
@@ -895,5 +891,5 @@ application = app
 if __name__ == '__main__':
     if MailChimp is None:
         import sys
-        print >> sys.stderr, "greatape is not installed. MailChimp support will be disabled."
+        print("greatape is not installed. MailChimp support will be disabled.", file=sys.stderr)
     app.run('0.0.0.0', 4001, debug=True)
