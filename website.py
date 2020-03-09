@@ -124,6 +124,17 @@ def getuser(f):
     return wrapped
 
 
+def request_is_xhr():
+    """
+    True if the request was triggered via a JavaScript XMLHttpRequest. This only works
+    with libraries that support the `X-Requested-With` header and set it to
+    "XMLHttpRequest".  Libraries that do that are prototype, jQuery and Mochikit and
+    probably some more. This function was ported from Werkzeug after being removed from
+    there.
+    """
+    return request.environ.get('HTTP_X_REQUESTED_WITH', '').lower() == 'xmlhttprequest'
+
+
 # ---------------------------------------------------------------------------
 # Data models and forms
 
@@ -413,7 +424,7 @@ def submit_register():
         db.session.commit()
         return render_template('regsuccess.html')
     else:
-        if request.is_xhr:
+        if request_is_xhr():
             return render_template('regform.html',
                                    regform=form, ajax_re_register=True)
         else:
@@ -433,7 +444,7 @@ def submit_login():
         flash("You are now logged in", 'info')
         return redirect(url_for('index'), code=303)
     else:
-        if request.is_xhr:
+        if request_is_xhr():
             return render_template('loginform.html',
                                    loginform=form, ajax_re_register=True)
         else:
@@ -710,7 +721,7 @@ def admin_approve(edition):
                         status = "Dupe"
             else:
                 status = 'Unknown action'
-        if request.is_xhr:
+        if request_is_xhr():
             return status
         else:
             return redirect(url_for('admin_approve', edition=edition), code=303)
